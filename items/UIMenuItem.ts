@@ -1,16 +1,16 @@
-import BadgeStyle from "../enums/BadgeStyle";
-import Font from "../enums/Font";
-import NativeUI from "../index";
-import ResRectangle from "../modules/ResRectangle";
-import ResText, { Alignment } from "../modules/ResText";
-import Sprite from "../modules/Sprite";
-import Color from "../utils/Color";
-import Point from "../utils/Point";
-import Size from "../utils/Size";
-import UUIDV4 from "../utils/UUIDV4";
+import { BadgeStyle } from "../enums/BadgeStyle";
+import { Font } from "../enums/Font";
+import { Menu } from "../index";
+import { ResRectangle } from "../modules/ResRectangle";
+import { Alignment, ResText } from "../modules/ResText";
+import { Sprite } from "../modules/Sprite";
+import { Color } from "../utils/Color";
+import { Point } from "../utils/Point";
+import { Size } from "../utils/Size";
+import { uuid } from "../utils/uuid";
 
-export default class UIMenuItem {
-	public readonly Id: string = UUIDV4();
+export class UIMenuItem {
+	public readonly Id: string = uuid();
 
 	public static readonly DefaultBackColor: Color = Color.Empty;
 	public static readonly DefaultHighlightedBackColor: Color = Color.White;
@@ -40,7 +40,7 @@ export default class UIMenuItem {
 	public Description: string;
 
 	public Offset: Point;
-	public Parent: NativeUI;
+	public Parent: Menu;
 
 	get Text() {
 		return this._text.caption;

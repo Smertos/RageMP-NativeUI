@@ -1,17 +1,17 @@
-import BadgeStyle from "../enums/BadgeStyle";
-import Sprite from "../modules/Sprite";
-import Color from "../utils/Color";
-import LiteEvent from "../utils/LiteEvent";
-import Point from "../utils/Point";
-import Size from "../utils/Size";
-import UIMenuItem from "./UIMenuItem";
+import { BadgeStyle } from "../enums/BadgeStyle";
+import { Sprite } from "../modules/Sprite";
+import { Color } from "../utils/Color";
+import { ILiteEvent, LiteEvent } from "../utils/LiteEvent";
+import { Point } from "../utils/Point";
+import { Size } from "../utils/Size";
+import { UIMenuItem } from "./UIMenuItem";
 
-export default class UIMenuCheckboxItem extends UIMenuItem {
+export class UIMenuCheckboxItem extends UIMenuItem {
 	private readonly _checkedSprite: Sprite;
 
 	private readonly OnCheckedChanged = new LiteEvent();
 
-	public get CheckedChanged() {
+	public get CheckedChanged(): ILiteEvent {
 		return this.OnCheckedChanged.expose();
 	}
 
@@ -60,13 +60,5 @@ export default class UIMenuCheckboxItem extends UIMenuItem {
 				: this.ForeColor
 			: new Color(163, 159, 148);
 		this._checkedSprite.Draw();
-	}
-
-	public SetRightBadge(badge: BadgeStyle) {
-		return this;
-	}
-
-	public SetRightLabel(text: string) {
-		return this;
 	}
 }

@@ -1,11 +1,4 @@
-export default class Point {
-	public X: number = 0;
-	public Y: number = 0;
-	constructor(x: number, y: number) {
-		this.X = x;
-		this.Y = y;
-	}
-
+export class Point {
 	static Parse(point: number[]): Point;
 	static Parse(point: { X: number; Y: number }): Point;
 	static Parse(arg): Point {
@@ -24,5 +17,13 @@ export default class Point {
 			}
 		}
 		return new Point(0, 0);
+	}
+
+	public X: number = 0;
+	public Y: number = 0;
+
+	constructor(x: number, y: number) {
+		this.X = x;
+		this.Y = y;
 	}
 }

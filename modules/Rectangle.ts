@@ -1,14 +1,16 @@
-import Color from "../utils/Color";
-import Point from "../utils/Point";
-import Size from "../utils/Size";
-import IElement from "./IElement";
+import { Color } from "../utils/Color";
+import { Point } from "../utils/Point";
+import { Size } from "../utils/Size";
+import { Element } from "./Element";
 
-export default class Rectangle extends IElement {
+export class Rectangle extends Element {
 	public pos: Point;
 	public size: Size;
 	public color: Color;
+
 	constructor(pos, size, color) {
 		super();
+
 		this.enabled = true;
 		this.pos = pos;
 		this.size = size;

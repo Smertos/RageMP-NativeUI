@@ -1,9 +1,9 @@
-import Color from "../utils/Color";
-import Point from "../utils/Point";
-import Size from "../utils/Size";
+import { Color } from "../utils/Color";
+import { Point } from "../utils/Point";
+import { Size } from "../utils/Size";
 import { Screen } from "../utils/Screen";
 
-export default class Sprite {
+export class Sprite {
 	public TextureName: string;
 	public pos: Point;
 	public size: Size;

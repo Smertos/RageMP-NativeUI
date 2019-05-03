@@ -1,7 +1,7 @@
 import { Screen } from "../utils/Screen";
-import ResText from "./ResText";
+import { ResText } from "./ResText";
 
-export default class StringMeasurer {
+export class StringMeasurer {
 	public static MeasureStringWidthNoConvert(input: string) {
 		mp.game.ui.setTextEntryForWidth("STRING");
 		ResText.AddLongString(input);

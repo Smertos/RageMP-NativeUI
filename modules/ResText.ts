@@ -1,7 +1,7 @@
-import Color from "../utils/Color";
-import Point from "../utils/Point";
-import Size from "../utils/Size";
-import Text from "./Text";
+import { Color } from "../utils/Color";
+import { Point } from "../utils/Point";
+import { Size } from "../utils/Size";
+import { Text } from "./Text";
 import { Screen } from "../utils/Screen";
 
 export enum Alignment {
@@ -10,7 +10,7 @@ export enum Alignment {
 	Right
 }
 
-export default class ResText extends Text {
+export class ResText extends Text {
 	public TextAlignment: Alignment = Alignment.Left;
 	public DropShadow: boolean;
 	public Outline: boolean;

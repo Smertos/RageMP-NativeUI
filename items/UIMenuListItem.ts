@@ -1,17 +1,17 @@
-import BadgeStyle from "../enums/BadgeStyle";
-import Font from "../enums/Font";
-import ItemsCollection from "../modules/ItemsCollection";
-import ListItem from "../modules/ListItem";
-import ResText, { Alignment } from "../modules/ResText";
-import Sprite from "../modules/Sprite";
-import Color from "../utils/Color";
-import LiteEvent from "../utils/LiteEvent";
-import Point from "../utils/Point";
-import Size from "../utils/Size";
-import StringMeasurer from "../modules/StringMeasurer";
-import UIMenuItem from "./UIMenuItem";
+import { BadgeStyle } from "../enums/BadgeStyle";
+import { Font } from "../enums/Font";
+import { ItemsCollection } from "../modules/ItemsCollection";
+import { ListItem } from "../modules/ListItem";
+import { Alignment, ResText } from "../modules/ResText";
+import { Sprite } from "../modules/Sprite";
+import { Color } from "../utils/Color";
+import { LiteEvent } from "../utils/LiteEvent";
+import { Point } from "../utils/Point";
+import { Size } from "../utils/Size";
+import { StringMeasurer } from "../modules/StringMeasurer";
+import { UIMenuItem } from "./UIMenuItem";
 
-export default class UIMenuListItem extends UIMenuItem {
+export class UIMenuListItem extends UIMenuItem {
 	protected _itemText: ResText;
 
 	protected _arrowLeft: Sprite;

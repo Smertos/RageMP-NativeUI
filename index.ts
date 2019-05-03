@@ -1,26 +1,26 @@
-import BadgeStyle from "./enums/BadgeStyle";
-import Font from "./enums/Font";
-import UIMenuCheckboxItem from "./items/UIMenuCheckboxItem";
-import UIMenuItem from "./items/UIMenuItem";
-import UIMenuListItem from "./items/UIMenuListItem";
-import UIMenuSliderItem from "./items/UIMenuSliderItem";
-import Container from "./modules/Container";
-import ItemsCollection from "./modules/ItemsCollection";
-import ListItem from "./modules/ListItem";
-import ResRectangle from "./modules/ResRectangle";
-import ResText, { Alignment } from "./modules/ResText";
-import Sprite from "./modules/Sprite";
-import Color from "./utils/Color";
-import Common from "./utils/Common";
-import LiteEvent from "./utils/LiteEvent";
-import Point from "./utils/Point";
-import Size from "./utils/Size";
-import StringMeasurer from "./modules/StringMeasurer";
-import UUIDV4 from "./utils/UUIDV4";
+import { BadgeStyle } from "./enums/BadgeStyle";
+import { Font } from "./enums/Font";
+import { UIMenuCheckboxItem } from "./items/UIMenuCheckboxItem";
+import { UIMenuItem } from "./items/UIMenuItem";
+import { UIMenuListItem } from "./items/UIMenuListItem";
+import { UIMenuSliderItem } from "./items/UIMenuSliderItem";
+import { Container } from "./modules/Container";
+import { ItemsCollection } from "./modules/ItemsCollection";
+import { ListItem } from "./modules/ListItem";
+import { ResRectangle } from "./modules/ResRectangle";
+import { Alignment, ResText } from "./modules/ResText";
+import { Sprite } from "./modules/Sprite";
+import { Color } from "./utils/Color";
+import { Common } from "./utils/Common";
+import { LiteEvent } from "./utils/LiteEvent";
+import { Point } from "./utils/Point";
+import { Size } from "./utils/Size";
+import { StringMeasurer } from "./modules/StringMeasurer";
+import { uuid } from "./utils/uuid";
 import { Screen } from "./utils/Screen";
 
-export default class NativeUI {
-	public readonly Id: string = UUIDV4();
+export class Menu {
+	public readonly Id: string = uuid();
 
 	private title: string;
 	private subtitle: string;
@@ -37,10 +37,10 @@ export default class NativeUI {
 
 	private extraOffset: number = 0;
 
-	public ParentMenu: NativeUI;
+	public ParentMenu: Menu;
 	public ParentItem: UIMenuItem;
 
-	public Children: Map<string, NativeUI>; // (UUIDV4, NativeUI)
+	public Children: Map<string, Menu>; // (uuid, Menu)
 
 	public WidthOffset: number = 0;
 
@@ -812,7 +812,7 @@ export default class NativeUI {
 		this.MenuClose.emit();
 	}
 
-	public BindMenuToItem(menuToBind: NativeUI, itemToBindTo: UIMenuItem) {
+	public BindMenuToItem(menuToBind: Menu, itemToBindTo: UIMenuItem) {
 		menuToBind.ParentMenu = this;
 		menuToBind.ParentItem = itemToBindTo;
 		this.Children.set(itemToBindTo.Id, menuToBind);
@@ -820,7 +820,7 @@ export default class NativeUI {
 
 	public ReleaseMenuFromItem(releaseFrom: UIMenuItem) {
 		if (!this.Children.has(releaseFrom.Id)) return false;
-		const menu: NativeUI = this.Children.get(releaseFrom.Id);
+		const menu: Menu = this.Children.get(releaseFrom.Id);
 		menu.ParentItem = null;
 		menu.ParentMenu = null;
 		this.Children.delete(releaseFrom.Id);
@@ -925,7 +925,7 @@ export default class NativeUI {
 	}
 }
 
-exports.Menu = NativeUI;
+exports.Menu = Menu;
 exports.UIMenuItem = UIMenuItem;
 exports.UIMenuListItem = UIMenuListItem;
 exports.UIMenuCheckboxItem = UIMenuCheckboxItem;

@@ -1,15 +1,16 @@
-import Color from "../utils/Color";
-import Point from "../utils/Point";
-import IElement from "./IElement";
-import ResText from "./ResText";
+import { Color } from "../utils/Color";
+import { Point } from "../utils/Point";
+import { Element } from "./Element";
+import { ResText } from "./ResText";
 
-export default class Text extends IElement {
+export class Text extends Element {
 	public caption: string;
 	public pos: Point;
 	public scale: number;
 	public color: Color;
 	public font: number;
 	public centered: boolean;
+
 	constructor(caption, pos, scale, color, font, centered) {
 		super();
 		this.caption = caption;
