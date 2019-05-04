@@ -42,50 +42,11 @@ declare module 'native-ui/enums/index' {
 
 }
 declare module 'native-ui/index' {
-  import { UIMenuCheckboxItem, UIMenuItem, UIMenuListItem, UIMenuSliderItem } from "items";
-  import { LiteEvent, Point, Size } from "utils";
+  import { BadgeStyle, Font } from 'enums';
+  import { UIMenuCheckboxItem, UIMenuItem, UIMenuListItem, UIMenuSliderItem } from 'items';
+  import { ItemsCollection, ListItem } from 'modules';
+  import { Color, LiteEvent, Point, Size } from 'utils';
   export class Menu {
-      readonly Id: string;
-      private title;
-      private subtitle;
-      private counterPretext;
-      private counterOverride;
-      private spriteLibrary;
-      private spriteName;
-      private offset;
-      private lastUpDownNavigation;
-      private lastLeftRightNavigation;
-      private _activeItem;
-      private extraOffset;
-      ParentMenu: Menu;
-      ParentItem: UIMenuItem;
-      Children: Map<string, Menu>;
-      WidthOffset: number;
-      Visible: boolean;
-      MouseControlsEnabled: boolean;
-      private _justOpened;
-      private safezoneOffset;
-      private MaxItemsOnScreen;
-      private _minItem;
-      private _maxItem;
-      AUDIO_LIBRARY: string;
-      AUDIO_UPDOWN: string;
-      AUDIO_LEFTRIGHT: string;
-      AUDIO_SELECT: string;
-      AUDIO_BACK: string;
-      AUDIO_ERROR: string;
-      MenuItems: (UIMenuItem | UIMenuListItem | UIMenuSliderItem | UIMenuCheckboxItem)[];
-      CurrentSelection: number;
-      readonly IndexChange: LiteEvent;
-      readonly ListChange: LiteEvent;
-      readonly SliderChange: LiteEvent;
-      readonly SliderSelect: LiteEvent;
-      readonly CheckboxChange: LiteEvent;
-      readonly ItemSelect: LiteEvent;
-      readonly MenuOpen: LiteEvent;
-      readonly MenuClose: LiteEvent;
-      readonly MenuChange: LiteEvent;
-      private MouseEdgeEnabled;
       private readonly _mainMenu;
       private readonly _logo;
       private readonly _upAndDownSprite;
@@ -98,34 +59,76 @@ declare module 'native-ui/index' {
       private readonly _descriptionText;
       private readonly _counterText;
       private readonly _background;
-      constructor(title: any, subtitle: any, offset: any, spriteLibrary: any, spriteName: any);
-      private RecalculateDescriptionPosition;
-      SetMenuWidthOffset(widthOffset: number): void;
-      AddItem(item: UIMenuItem): void;
-      RefreshIndex(): void;
-      Clear(): void;
-      Open(): void;
-      Close(): void;
-      Subtitle: string;
-      GoLeft(): void;
-      GoRight(): void;
-      SelectItem(): void;
-      getMousePosition(relative?: boolean): number[];
-      GetScreenResolutionMantainRatio(): Size;
-      IsMouseInBounds(topLeft: Point, boxSize: Size): boolean;
-      IsMouseInListItemArrows(item: any, topLeft: any, safezone: any): 1 | 0 | 2;
-      ProcessMouse(): void;
-      ProcessControl(): void;
-      private FormatDescription;
-      GoUpOverflow(): void;
-      GoUp(): void;
-      GoDownOverflow(): void;
-      GoDown(): void;
-      GoBack(): void;
-      BindMenuToItem(menuToBind: Menu, itemToBindTo: UIMenuItem): void;
-      ReleaseMenuFromItem(releaseFrom: UIMenuItem): boolean;
+      private title;
+      private subtitle;
+      private counterPretext;
+      private counterOverride;
+      private spriteLibrary;
+      private spriteName;
+      private offset;
+      private lastUpDownNavigation;
+      private lastLeftRightNavigation;
+      private extraOffset;
+      private safezoneOffset;
+      private maxItemsOnScreen;
+      private mouseEdgeEnabled;
+      private _activeItem;
+      private _justOpened;
+      private _minItem;
+      private _maxItem;
+      readonly indexChange: LiteEvent;
+      readonly listChange: LiteEvent;
+      readonly sliderChange: LiteEvent;
+      readonly sliderSelect: LiteEvent;
+      readonly checkboxChange: LiteEvent;
+      readonly itemSelect: LiteEvent;
+      readonly menuOpen: LiteEvent;
+      readonly menuClose: LiteEvent;
+      readonly menuChange: LiteEvent;
+      readonly id: string;
+      AUDIO_LIBRARY: string;
+      AUDIO_UPDOWN: string;
+      AUDIO_LEFTRIGHT: string;
+      AUDIO_SELECT: string;
+      AUDIO_BACK: string;
+      AUDIO_ERROR: string;
+      parentMenu: Menu;
+      parentItem: UIMenuItem;
+      children: Map<string, Menu>;
+      widthOffset: number;
+      visible: boolean;
+      mouseControlsEnabled: boolean;
+      menuItems: (UIMenuItem | UIMenuListItem | UIMenuSliderItem | UIMenuCheckboxItem)[];
+      currentSelection: number;
+      constructor(title: string, subtitle: string, offset: Point, spriteLibrary: string, spriteName: string);
+      private recalculateDescriptionPosition;
+      setMenuWidthOffset(widthOffset: number): void;
+      addItem(item: UIMenuItem): void;
+      refreshIndex(): void;
+      clear(): void;
+      open(): void;
+      close(): void;
+      subtitleCaption: string;
+      goLeft(): void;
+      goRight(): void;
+      selectItem(): void;
+      getMousePosition(relative?: boolean): [number, number];
+      getScreenResolutionMantainRatio(): Size;
+      isMouseInBounds(topLeft: Point, boxSize: Size): boolean;
+      isMouseInListItemArrows(item: any, topLeft: any, safezone: any): 1 | 0 | 2;
+      processMouse(): void;
+      processControl(): void;
+      private formatDescription;
+      goUpOverflow(): void;
+      goUp(): void;
+      goDownOverflow(): void;
+      goDown(): void;
+      goBack(): void;
+      bindMenuToItem(menuToBind: Menu, itemToBindTo: UIMenuItem): void;
+      releaseMenuFromItem(releaseFrom: UIMenuItem): boolean;
       private render;
   }
+  export { UIMenuItem, UIMenuListItem, UIMenuCheckboxItem, UIMenuSliderItem, BadgeStyle, Point, Size, Color, Font, ItemsCollection, ListItem };
 
 }
 declare module 'native-ui/items/index' {
@@ -136,54 +139,54 @@ declare module 'native-ui/items/index' {
 
 }
 declare module 'native-ui/items/ui-menu-checkbox' {
-  import { UIMenuItem } from "items/ui-menu.item";
-  import { ILiteEvent } from "utils";
+  import { UIMenuItem } from 'items/ui-menu.item';
+  import { ILiteEvent } from 'utils';
   export class UIMenuCheckboxItem extends UIMenuItem {
       private readonly _checkedSprite;
-      private readonly OnCheckedChanged;
-      readonly CheckedChanged: ILiteEvent;
-      Checked: boolean;
+      private readonly onCheckedChanged;
+      readonly checkedChanged: ILiteEvent;
+      checked: boolean;
       constructor(text: string, check?: boolean, description?: string);
-      SetVerticalPosition(y: number): void;
-      Draw(): void;
+      setVerticalPosition(y: number): void;
+      draw(): void;
   }
 
 }
 declare module 'native-ui/items/ui-menu-list' {
-  import { BadgeStyle } from "enums";
-  import { UIMenuItem } from "items/ui-menu.item";
-  import { ItemsCollection } from "modules/items-collection";
-  import { ListItem } from "modules/list-item";
-  import { ResText } from "modules/res-text";
-  import { Sprite } from "modules/sprite";
+  import { BadgeStyle } from 'enums';
+  import { UIMenuItem } from 'items/ui-menu.item';
+  import { ItemsCollection } from 'modules/items-collection';
+  import { ListItem } from 'modules/list-item';
+  import { ResText } from 'modules/res-text';
+  import { Sprite } from 'modules/sprite';
   export class UIMenuListItem extends UIMenuItem {
+      private readonly onListChanged;
+      private currOffset;
+      private _collection;
       protected _itemText: ResText;
       protected _arrowLeft: Sprite;
       protected _arrowRight: Sprite;
-      private currOffset;
-      private collection;
-      Collection: ListItem[];
-      SelectedItem: ListItem;
-      readonly SelectedValue: any;
-      ScrollingEnabled: boolean;
-      HoldTimeBeforeScroll: number;
-      private readonly OnListChanged;
-      readonly ListChanged: import("native-ui/utils/index").ILiteEvent;
+      collection: Array<ListItem>;
+      selectedItem: ListItem;
+      readonly selectedValue: any;
+      scrollingEnabled: boolean;
+      holdTimeBeforeScroll: number;
+      readonly listChanged: import("native-ui/utils/index").ILiteEvent;
       protected _index: number;
-      Index: number;
+      index: number;
       constructor(text: string, description?: string, collection?: ItemsCollection, startIndex?: number);
       setCollection(collection: ItemsCollection): void;
       setCollectionItem(index: number, item: ListItem | string, resetSelection?: boolean): void;
-      SetVerticalPosition(y: number): void;
-      SetRightLabel(text: string): this;
-      SetRightBadge(badge: BadgeStyle): this;
-      Draw(): void;
+      setVerticalPosition(y: number): void;
+      setRightLabel(text: string): this;
+      setRightBadge(badge: BadgeStyle): this;
+      draw(): void;
   }
 
 }
 declare module 'native-ui/items/ui-menu-slider' {
-  import { BadgeStyle } from "enums";
-  import { UIMenuItem } from "items/ui-menu.item";
+  import { BadgeStyle } from 'enums';
+  import { UIMenuItem } from 'items/ui-menu.item';
   export class UIMenuSliderItem extends UIMenuItem {
       private _arrowLeft;
       private _arrowRight;
@@ -192,30 +195,30 @@ declare module 'native-ui/items/ui-menu-slider' {
       private _rectangleDivider;
       private _items;
       private _index;
-      Index: number;
+      index: number;
       constructor(text: string, items: any[], index: number, description?: string, divider?: boolean);
-      SetVerticalPosition(y: number): void;
-      IndexToItem(index: number): any;
-      Draw(): void;
-      SetRightBadge(badge: BadgeStyle): void;
-      SetRightLabel(text: string): void;
+      setVerticalPosition(y: number): void;
+      indexToItem(index: number): any;
+      draw(): void;
+      setRightBadge(badge: BadgeStyle): void;
+      setRightLabel(text: string): void;
   }
 
 }
 declare module 'native-ui/items/ui-menu' {
-  import { BadgeStyle } from "native-ui/enums/badge-style";
-  import { Menu } from "native-ui/index";
-  import { ResRectangle } from "native-ui/modules/res-rectangle";
-  import { ResText } from "native-ui/modules/res-text";
-  import { Sprite } from "native-ui/modules/sprite";
-  import { Color } from "native-ui/utils/color";
-  import { Point } from "native-ui/utils/point";
+  import { BadgeStyle } from 'native-ui/enums/badge-style';
+  import { Menu } from 'native-ui/index';
+  import { ResRectangle } from 'native-ui/modules/res-rectangle';
+  import { ResText } from 'native-ui/modules/res-text';
+  import { Sprite } from 'native-ui/modules/sprite';
+  import { Color } from 'native-ui/utils/color';
+  import { Point } from 'native-ui/utils/point';
   export class UIMenuItem {
-      readonly Id: string;
-      static readonly DefaultBackColor: Color;
-      static readonly DefaultHighlightedBackColor: Color;
-      static readonly DefaultForeColor: Color;
-      static readonly DefaultHighlightedForeColor: Color;
+      readonly id: string;
+      static readonly defaultBackColor: Color;
+      static readonly defaultHighlightedBackColor: Color;
+      static readonly defaultForeColor: Color;
+      static readonly defaultHighlightedForeColor: Color;
       private _event;
       protected _rectangle: ResRectangle;
       protected _text: ResText;
@@ -223,42 +226,43 @@ declare module 'native-ui/items/ui-menu' {
       protected _badgeLeft: Sprite;
       protected _badgeRight: Sprite;
       protected _labelText: ResText;
-      BackColor: Color;
-      HighlightedBackColor: Color;
-      ForeColor: Color;
-      HighlightedForeColor: Color;
-      Enabled: boolean;
-      Selected: boolean;
-      Hovered: boolean;
-      Description: string;
-      Offset: Point;
-      Parent: Menu;
-      Text: string;
-      RightLabel: string;
-      LeftBadge: BadgeStyle;
-      RightBadge: BadgeStyle;
-      constructor(text: any, description?: string);
-      SetVerticalPosition(y: number): void;
+      backColor: Color;
+      highlightedBackColor: Color;
+      foreColor: Color;
+      highlightedForeColor: Color;
+      enabled: boolean;
+      selected: boolean;
+      hovered: boolean;
+      description: string;
+      offset: Point;
+      parent: Menu;
+      text: string;
+      rightLabel: string;
+      leftBadge: BadgeStyle;
+      rightBadge: BadgeStyle;
+      constructor(text: string, description?: string);
+      setVerticalPosition(y: number): void;
       addEvent(event: string, ...args: any[]): void;
       fireEvent(): void;
-      Draw(): void;
-      SetLeftBadge(badge: BadgeStyle): void;
-      SetRightBadge(badge: BadgeStyle): void;
-      SetRightLabel(text: string): void;
-      BadgeToSpriteLib(badge: BadgeStyle): string;
-      BadgeToSpriteName(badge: BadgeStyle, selected: boolean): "" | "mp_medal_bronze" | "mp_medal_gold" | "medal_silver" | "mp_alerttriangle" | "mp_hostcrown" | "shop_ammo_icon_b" | "shop_ammo_icon_a" | "shop_armour_icon_b" | "shop_armour_icon_a" | "shop_barber_icon_b" | "shop_barber_icon_a" | "shop_clothing_icon_b" | "shop_clothing_icon_a" | "shop_franklin_icon_b" | "shop_franklin_icon_a" | "shop_garage_bike_icon_b" | "shop_garage_bike_icon_a" | "shop_garage_icon_b" | "shop_garage_icon_a" | "shop_gunclub_icon_b" | "shop_gunclub_icon_a" | "shop_health_icon_b" | "shop_health_icon_a" | "shop_lock" | "shop_makeup_icon_b" | "shop_makeup_icon_a" | "shop_mask_icon_b" | "shop_mask_icon_a" | "shop_michael_icon_b" | "shop_michael_icon_a" | "shop_new_star" | "shop_tattoos_icon_b" | "shop_tattoos_icon_" | "shop_tick_icon" | "shop_trevor_icon_b" | "shop_trevor_icon_a";
-      IsBagdeWhiteSprite(badge: BadgeStyle): boolean;
-      BadgeToColor(badge: BadgeStyle, selected: boolean): Color;
+      draw(): void;
+      setLeftBadge(badge: BadgeStyle): void;
+      setRightBadge(badge: BadgeStyle): void;
+      setRightLabel(text: string): void;
+      badgeToSpriteLib(badge: BadgeStyle): string;
+      badgeToSpriteName(badge: BadgeStyle, selected: boolean): string;
+      isBagdeWhiteSprite(badge: BadgeStyle): boolean;
+      badgeToColor(badge: BadgeStyle, selected: boolean): Color;
   }
 
 }
 declare module 'native-ui/modules/container' {
-  import { Rectangle } from "modules/rectangle";
+  import { Rectangle } from 'modules/rectangle';
+  import { Color, Point, Size } from 'utils';
   export class Container extends Rectangle {
-      Items: any[];
-      constructor(pos: any, size: any, color: any);
+      items: any[];
+      constructor(position: Point, size: Size, color: Color);
       addItem(item: any): void;
-      Draw(offset?: any): void;
+      draw(offset?: Point): void;
   }
 
 }
@@ -287,90 +291,91 @@ declare module 'native-ui/modules/items-collection' {
       private items;
       constructor(items: any[]);
       length(): number;
-      getListItems(): any[];
+      getListItems(): Array<any>;
   }
 
 }
 declare module 'native-ui/modules/list-item' {
   export class ListItem {
-      readonly Id: string;
-      DisplayText: string;
-      Data: any;
+      readonly id: string;
+      displayText: string;
+      data: any;
       constructor(text?: string, data?: any);
   }
 
 }
 declare module 'native-ui/modules/rectangle' {
-  import { Element } from "modules/element";
-  import { Color, Point, Size } from "utils";
+  import { Element } from 'modules/element';
+  import { Color, Point, Size } from 'utils';
   export class Rectangle extends Element {
       pos: Point;
       size: Size;
       color: Color;
-      constructor(pos: any, size: any, color: any);
-      Draw(pos: any, size: any, color: any): void;
+      constructor(position: Point, size: Size, color: Color);
+      draw(position: Point, size: Size, color: Color): void;
   }
 
 }
 declare module 'native-ui/modules/res-rectangle' {
-  import { Rectangle } from "modules/rectangle";
+  import { Rectangle } from 'modules/rectangle';
   export class ResRectangle extends Rectangle {
       constructor(pos: any, size: any, color: any);
-      Draw(): void;
-      Draw(offset: any): void;
-      Draw(pos: any, size: any, color: any): void;
+      draw(): void;
+      draw(offset: any): void;
+      draw(pos: any, size: any, color: any): void;
   }
 
 }
 declare module 'native-ui/modules/res-text' {
-  import { Text } from "modules/text";
-  import { Size } from "utils";
+  import { Text } from 'modules/text';
+  import { Size } from 'utils';
   export enum Alignment {
       Left = 0,
       Centered = 1,
       Right = 2
   }
   export class ResText extends Text {
-      TextAlignment: Alignment;
-      DropShadow: boolean;
-      Outline: boolean;
-      WordWrap: Size;
+      textAlignment: Alignment;
+      dropShadow: boolean;
+      outline: boolean;
+      wordWrap: Size;
       constructor(caption: any, pos: any, scale: any, color?: any, font?: any, justify?: any);
-      Draw(): void;
-      Draw(offset: Size): void;
-      Draw(caption: any, pos: any, scale: any, color: any, font: any, arg2: any): void;
-      static AddLongString(str: string): void;
+      draw(): void;
+      draw(offset: Size): void;
+      draw(caption: any, pos: any, scale: any, color: any, font: any, arg2: any): void;
+      static addLongString(str: string): void;
   }
 
 }
 declare module 'native-ui/modules/sprite' {
-  import { Color, Point, Size } from "utils";
+  import { Color, Point, Size } from 'utils';
   export class Sprite {
-      TextureName: string;
+      private _textureDict;
+      textureName: string;
       pos: Point;
       size: Size;
       heading: number;
       color: Color;
       visible: boolean;
-      private _textureDict;
+      textureDict: string;
+      readonly isTextureDictionaryLoaded: boolean;
       constructor(textureDict: any, textureName: any, pos: any, size: any, heading?: number, color?: Color);
-      LoadTextureDictionary(): void;
-      TextureDict: string;
-      readonly IsTextureDictionaryLoaded: boolean;
-      Draw(textureDictionary?: any, textureName?: any, pos?: any, size?: any, heading?: any, color?: any, loadTexture?: any): void;
+      loadTextureDictionary(): void;
+      draw(textureDictionary?: any, textureName?: any, pos?: any, size?: any, heading?: any, color?: any, loadTexture?: any): void;
   }
 
 }
 declare module 'native-ui/modules/string-measurer' {
   export class StringMeasurer {
-      static MeasureStringWidthNoConvert(input: string): number;
-      static MeasureString(str: string): number;
+      static measureStringWidthNoConvert(input: string): number;
+      static measureString(input: string): number;
   }
 
 }
 declare module 'native-ui/modules/text' {
-  import { Element } from "modules/element";
-  import { Color, Point } from "utils";
+  import { Font } from 'enums';
+  import { Element } from 'modules/element';
+  import { Color, Point, Size } from 'utils';
   export class Text extends Element {
       caption: string;
       pos: Point;
@@ -378,8 +383,8 @@ declare module 'native-ui/modules/text' {
       color: Color;
       font: number;
       centered: boolean;
-      constructor(caption: any, pos: any, scale: any, color: any, font: any, centered: any);
-      Draw(caption: any, pos: any, scale: any, color: any, font: any, centered: any): void;
+      constructor(caption: string, pos: Point, scale: number, color: Color, font: Font, centered: boolean);
+      draw(caption: string | Size, pos: Point, scale: number, color: Color, font: number, centered: boolean): void;
   }
 
 }
@@ -394,13 +399,13 @@ declare module 'native-ui/utils/color' {
       G: number;
       B: number;
       A: number;
-      constructor(r: any, g: any, b: any, a?: number);
+      constructor(r: number, g: number, b: number, a?: number);
   }
 
 }
 declare module 'native-ui/utils/common' {
   export class Common {
-      static PlaySound(audioName: string, audioRef: string): void;
+      static playSound(audioName: string, audioRef: string): void;
   }
 
 }
@@ -415,37 +420,34 @@ declare module 'native-ui/utils/index' {
 
 }
 declare module 'native-ui/utils/lite-event' {
+  type EventHandler = {
+      (...args: any[]): void;
+  };
   export interface ILiteEvent {
-      on(handler: {
-          (...args: any[]): void;
-      }): void;
-      off(handler: {
-          (...args: any[]): void;
-      }): void;
+      on(handler: EventHandler): void;
+      off(handler: EventHandler): void;
   }
   export class LiteEvent implements ILiteEvent {
       private handlers;
-      on(handler: {
-          (...args: any[]): void;
-      }): void;
-      off(handler: {
-          (...args: any[]): void;
-      }): void;
+      on(handler: EventHandler): void;
+      off(handler: EventHandler): void;
       emit(...args: any[]): void;
       expose(): ILiteEvent;
   }
+  export {};
 
 }
 declare module 'native-ui/utils/point' {
   export class Point {
-      static Parse(point: number[]): Point;
-      static Parse(point: {
-          X: number;
-          Y: number;
+      static parse(point: number[]): Point;
+      static parse(point: {
+          x: number;
+          y: number;
       }): Point;
-      X: number;
-      Y: number;
-      constructor(x: number, y: number);
+      static parse(point: string): Point;
+      x: number;
+      y: number;
+      constructor(x?: number, y?: number);
   }
 
 }
@@ -458,9 +460,9 @@ declare module 'native-ui/utils/screen' {
 }
 declare module 'native-ui/utils/size' {
   export class Size {
-      Width: number;
-      Height: number;
-      constructor(w?: number, h?: number);
+      width: number;
+      height: number;
+      constructor(width?: number, height?: number);
   }
 
 }

@@ -1,87 +1,9 @@
-import { BadgeStyle, Font } from "enums";
-import { UIMenuCheckboxItem, UIMenuItem, UIMenuListItem, UIMenuSliderItem } from "items";
-import { Alignment, Container, ItemsCollection, ListItem, ResRectangle, ResText, Sprite, StringMeasurer } from "modules";
-import { Color, Common, LiteEvent, Point, Screen, Size, uuid } from "utils";
+import { BadgeStyle, Font } from 'enums';
+import { UIMenuCheckboxItem, UIMenuItem, UIMenuListItem, UIMenuSliderItem } from 'items';
+import { Alignment, Container, ItemsCollection, ListItem, ResRectangle, ResText, Sprite, StringMeasurer } from 'modules';
+import { Color, Common, LiteEvent, Point, Screen, Size, uuid } from 'utils';
 
 export class Menu {
-	public readonly Id: string = uuid();
-
-	private title: string;
-	private subtitle: string;
-	private counterPretext: string = "";
-	private counterOverride: string = undefined;
-	private spriteLibrary: string;
-	private spriteName: string;
-	private offset: Point;
-
-	private lastUpDownNavigation = 0;
-	private lastLeftRightNavigation = 0;
-
-	private _activeItem: number = 1000;
-
-	private extraOffset: number = 0;
-
-	public ParentMenu: Menu;
-	public ParentItem: UIMenuItem;
-
-	public Children: Map<string, Menu>; // (uuid, Menu)
-
-	public WidthOffset: number = 0;
-
-	public Visible: boolean = true;
-
-	public MouseControlsEnabled: boolean = false;
-
-	private _justOpened: boolean = true;
-
-	private safezoneOffset: Point = new Point(0, 0);
-
-	private MaxItemsOnScreen: number = 9;
-	private _minItem: number;
-	private _maxItem: number = this.MaxItemsOnScreen;
-
-	public AUDIO_LIBRARY: string = "HUD_FRONTEND_DEFAULT_SOUNDSET";
-
-	public AUDIO_UPDOWN: string = "NAV_UP_DOWN";
-	public AUDIO_LEFTRIGHT: string = "NAV_LEFT_RIGHT";
-	public AUDIO_SELECT: string = "SELECT";
-	public AUDIO_BACK: string = "BACK";
-	public AUDIO_ERROR: string = "ERROR";
-
-	public MenuItems: (
-		| UIMenuItem
-		| UIMenuListItem
-		| UIMenuSliderItem
-		| UIMenuCheckboxItem)[] = [];
-
-	get CurrentSelection() {
-		return this._activeItem % this.MenuItems.length;
-	}
-	set CurrentSelection(v) {
-		this.MenuItems[this._activeItem % this.MenuItems.length].Selected = false;
-		this._activeItem = 1000 - (1000 % this.MenuItems.length) + v;
-		if (this.CurrentSelection > this._maxItem) {
-			this._maxItem = this.CurrentSelection;
-			this._minItem = this.CurrentSelection - this.MaxItemsOnScreen;
-		} else if (this.CurrentSelection < this._minItem) {
-			this._maxItem = this.MaxItemsOnScreen + this.CurrentSelection;
-			this._minItem = this.CurrentSelection;
-		}
-	}
-
-	// Events
-	public readonly IndexChange = new LiteEvent();
-	public readonly ListChange = new LiteEvent();
-	public readonly SliderChange = new LiteEvent();
-	public readonly SliderSelect = new LiteEvent();
-	public readonly CheckboxChange = new LiteEvent();
-	public readonly ItemSelect = new LiteEvent();
-	public readonly MenuOpen = new LiteEvent();
-	public readonly MenuClose = new LiteEvent();
-	public readonly MenuChange = new LiteEvent();
-
-	private MouseEdgeEnabled: boolean = true;
-
 	private readonly _mainMenu: Container;
 	private readonly _logo: Sprite;
 	private readonly _upAndDownSprite: Sprite;
@@ -95,15 +17,75 @@ export class Menu {
 	private readonly _counterText: ResText;
 	private readonly _background: Sprite;
 
-	constructor(title, subtitle, offset, spriteLibrary, spriteName) {
-		if (!(offset instanceof Point)) offset = Point.Parse(offset);
+	private title: string;
+	private subtitle: string;
+	private counterPretext: string = '';
+	private counterOverride: string = undefined;
+	private spriteLibrary: string;
+	private spriteName: string;
+	private offset: Point;
+	private lastUpDownNavigation = 0;
+	private lastLeftRightNavigation = 0;
+	private extraOffset: number = 0;
+	private safezoneOffset: Point = new Point(0, 0);
+	private maxItemsOnScreen: number = 9;
+	private mouseEdgeEnabled: boolean = true;
+	private _activeItem: number = 1000;
+	private _justOpened: boolean = true;
+	private _minItem: number;
+	private _maxItem: number = this.maxItemsOnScreen;
+
+	readonly indexChange = new LiteEvent();
+	readonly listChange = new LiteEvent();
+	readonly sliderChange = new LiteEvent();
+	readonly sliderSelect = new LiteEvent();
+	readonly checkboxChange = new LiteEvent();
+	readonly itemSelect = new LiteEvent();
+	readonly menuOpen = new LiteEvent();
+	readonly menuClose = new LiteEvent();
+	readonly menuChange = new LiteEvent();
+	readonly id: string = uuid();
+
+	AUDIO_LIBRARY: string = 'HUD_FRONTEND_DEFAULT_SOUNDSET';
+	AUDIO_UPDOWN: string = 'NAV_UP_DOWN';
+	AUDIO_LEFTRIGHT: string = 'NAV_LEFT_RIGHT';
+	AUDIO_SELECT: string = 'SELECT';
+	AUDIO_BACK: string = 'BACK';
+	AUDIO_ERROR: string = 'ERROR';
+
+	parentMenu: Menu;
+	parentItem: UIMenuItem;
+	children: Map<string, Menu>; // (uuid, Menu)
+	widthOffset: number = 0;
+	visible: boolean = true;
+	mouseControlsEnabled: boolean = false;
+	menuItems: (UIMenuItem | UIMenuListItem | UIMenuSliderItem | UIMenuCheckboxItem)[] = [];
+
+	get currentSelection() {
+		return this._activeItem % this.menuItems.length;
+	}
+	set currentSelection(v) {
+		this.menuItems[this._activeItem % this.menuItems.length].selected = false;
+		this._activeItem = 1000 - (1000 % this.menuItems.length) + v;
+		if (this.currentSelection > this._maxItem) {
+			this._maxItem = this.currentSelection;
+			this._minItem = this.currentSelection - this.maxItemsOnScreen;
+		} else if (this.currentSelection < this._minItem) {
+			this._maxItem = this.maxItemsOnScreen + this.currentSelection;
+			this._minItem = this.currentSelection;
+		}
+	}
+
+
+	constructor(title: string, subtitle: string, offset: Point, spriteLibrary: string, spriteName: string) {
+		if (!(offset instanceof Point)) offset = Point.parse(offset);
 
 		this.title = title;
 		this.subtitle = subtitle;
-		this.spriteLibrary = spriteLibrary || "commonmenu";
-		this.spriteName = spriteName || "interaction_bgd";
-		this.offset = new Point(offset.X, offset.Y);
-		this.Children = new Map();
+		this.spriteLibrary = spriteLibrary || 'commonmenu';
+		this.spriteName = spriteName || 'interaction_bgd';
+		this.offset = new Point(offset.x, offset.y);
+		this.children = new Map();
 
 		// Create everything
 		this._mainMenu = new Container(
@@ -111,63 +93,69 @@ export class Menu {
 			new Size(700, 500),
 			new Color(0, 0, 0, 0)
 		);
+
 		this._logo = new Sprite(
 			this.spriteLibrary,
 			this.spriteName,
-			new Point(0 + this.offset.X, 0 + this.offset.Y),
+			new Point(0 + this.offset.x, 0 + this.offset.y),
 			new Size(431, 107)
 		);
-		this._mainMenu.addItem(
-			(this._title = new ResText(
-				this.title,
-				new Point(215 + this.offset.X, 20 + this.offset.Y),
-				1.15,
-				new Color(255, 255, 255),
-				1,
-				Alignment.Centered
-			))
+		
+		this._title = new ResText(
+			this.title,
+			new Point(215 + this.offset.x, 20 + this.offset.y),
+			1.15,
+			new Color(255, 255, 255),
+			1,
+			Alignment.Centered
 		);
 
-		if (this.subtitle !== "") {
+		this._mainMenu.addItem(this._title);
+
+		if (this.subtitle !== '') {
 			this._mainMenu.addItem(
 				new ResRectangle(
-					new Point(0 + this.offset.X, 107 + this.offset.Y),
+					new Point(0 + this.offset.x, 107 + this.offset.y),
 					new Size(431, 37),
 					new Color(0, 0, 0, 255)
 				)
 			);
+
 			this._mainMenu.addItem(
 				(this._subtitle = new ResText(
 					this.subtitle,
-					new Point(8 + this.offset.X, 110 + this.offset.Y),
+					new Point(8 + this.offset.x, 110 + this.offset.y),
 					0.35,
 					new Color(255, 255, 255),
 					0,
 					Alignment.Left
 				))
 			);
-			if (this.subtitle.startsWith("~")) {
+
+			if (this.subtitle.startsWith('~')) {
 				this.counterPretext = this.subtitle.substr(0, 3);
 			}
+
 			this._counterText = new ResText(
-				"",
-				new Point(425 + this.offset.X, 110 + this.offset.Y),
+				'',
+				new Point(425 + this.offset.x, 110 + this.offset.y),
 				0.35,
 				new Color(255, 255, 255),
 				0,
 				Alignment.Right
 			);
+
 			this.extraOffset += 37;
 		}
 
 		this._upAndDownSprite = new Sprite(
-			"commonmenu",
-			"shop_arrows_upanddown",
+			'commonmenu',
+			'shop_arrows_upanddown',
 			new Point(
-				190 + this.offset.X,
+				190 + this.offset.x,
 				147 +
-					37 * (this.MaxItemsOnScreen + 1) +
-					this.offset.Y -
+					37 * (this.maxItemsOnScreen + 1) +
+					this.offset.y -
 					37 +
 					this.extraOffset
 			),
@@ -176,10 +164,10 @@ export class Menu {
 
 		this._extraRectangleUp = new ResRectangle(
 			new Point(
-				0 + this.offset.X,
+				0 + this.offset.x,
 				144 +
-					38 * (this.MaxItemsOnScreen + 1) +
-					this.offset.Y -
+					38 * (this.maxItemsOnScreen + 1) +
+					this.offset.y -
 					37 +
 					this.extraOffset
 			),
@@ -189,11 +177,11 @@ export class Menu {
 
 		this._extraRectangleDown = new ResRectangle(
 			new Point(
-				0 + this.offset.X,
+				0 + this.offset.x,
 				144 +
 					18 +
-					38 * (this.MaxItemsOnScreen + 1) +
-					this.offset.Y -
+					38 * (this.maxItemsOnScreen + 1) +
+					this.offset.y -
 					37 +
 					this.extraOffset
 			),
@@ -201,227 +189,204 @@ export class Menu {
 			new Color(0, 0, 0, 200)
 		);
 
-		this._descriptionBar = new ResRectangle(
-			new Point(this.offset.X, 123),
-			new Size(431, 4),
-			Color.Black
-		);
-		this._descriptionRectangle = new Sprite(
-			"commonmenu",
-			"gradient_bgd",
-			new Point(this.offset.X, 127),
-			new Size(431, 30)
-		);
-		this._descriptionText = new ResText(
-			"Description",
-			new Point(this.offset.X + 5, 125),
-			0.35,
-			new Color(255, 255, 255, 255),
-			Font.ChaletLondon,
-			Alignment.Left
-		);
+		this._descriptionBar = new ResRectangle(new Point(this.offset.x, 123), new Size(431, 4), Color.Black);
+		this._descriptionRectangle = new Sprite('commonmenu', 'gradient_bgd', new Point(this.offset.x, 127), new Size(431, 30));
+		this._descriptionText = new ResText( 'Description', new Point(this.offset.x + 5, 125), 0.35, new Color(255, 255, 255, 255), Font.ChaletLondon, Alignment.Left);
+		this._background = new Sprite('commonmenu', 'gradient_bgd', new Point(this.offset.x, 144 + this.offset.y - 37 + this.extraOffset), new Size(290, 25));
 
-		this._background = new Sprite(
-			"commonmenu",
-			"gradient_bgd",
-			new Point(this.offset.X, 144 + this.offset.Y - 37 + this.extraOffset),
-			new Size(290, 25)
-		);
-
-		mp.events.add("render", this.render.bind(this));
-		console.log(`Created Native UI! ${this.title}`);
+		mp.events.add('render', this.render.bind(this));
 	}
 
-	private RecalculateDescriptionPosition() {
-		this._descriptionBar.pos = new Point(
-			this.offset.X,
-			149 - 37 + this.extraOffset + this.offset.Y
-		);
-		this._descriptionRectangle.pos = new Point(
-			this.offset.X,
-			149 - 37 + this.extraOffset + this.offset.Y
-		);
-		this._descriptionText.pos = new Point(
-			this.offset.X + 8,
-			155 - 37 + this.extraOffset + this.offset.Y
-		);
+	private recalculateDescriptionPosition() {
+		this._descriptionBar.pos = new Point(this.offset.x, 149 - 37 + this.extraOffset + this.offset.y);
+		this._descriptionRectangle.pos = new Point(this.offset.x, 149 - 37 + this.extraOffset + this.offset.y);
+		this._descriptionText.pos = new Point(this.offset.x + 8, 155 - 37 + this.extraOffset + this.offset.y);
 
-		this._descriptionBar.size = new Size(431 + this.WidthOffset, 4);
-		this._descriptionRectangle.size = new Size(431 + this.WidthOffset, 30);
+		this._descriptionBar.size = new Size(431 + this.widthOffset, 4);
+		this._descriptionRectangle.size = new Size(431 + this.widthOffset, 30);
 
-		let count = this.MenuItems.length;
-		if (count > this.MaxItemsOnScreen + 1) count = this.MaxItemsOnScreen + 2;
+		let count = this.menuItems.length;
+		if (count > this.maxItemsOnScreen + 1) count = this.maxItemsOnScreen + 2;
 
-		this._descriptionBar.pos = new Point(
-			this.offset.X,
-			38 * count + this._descriptionBar.pos.Y
-		);
-		this._descriptionRectangle.pos = new Point(
-			this.offset.X,
-			38 * count + this._descriptionRectangle.pos.Y
-		);
-		this._descriptionText.pos = new Point(
-			this.offset.X + 8,
-			38 * count + this._descriptionText.pos.Y
-		);
+		this._descriptionBar.pos = new Point(this.offset.x, 38 * count + this._descriptionBar.pos.y);
+		this._descriptionRectangle.pos = new Point(this.offset.x, 38 * count + this._descriptionRectangle.pos.y);
+		this._descriptionText.pos = new Point(this.offset.x + 8, 38 * count + this._descriptionText.pos.y);
 	}
 
-	public SetMenuWidthOffset(widthOffset: number) {
-		this.WidthOffset = widthOffset;
+	setMenuWidthOffset(widthOffset: number) {
+		this.widthOffset = widthOffset;
+
 		if (this._logo != null) {
-			this._logo.size = new Size(431 + this.WidthOffset, 107);
+			this._logo.size = new Size(431 + this.widthOffset, 107);
 		}
-		this._mainMenu.Items[0].pos = new Point(
-			(this.WidthOffset + this.offset.X + 431) / 2,
-			20 + this.offset.Y
-		);
+
+		this._mainMenu.items[0].pos = new Point((this.widthOffset + this.offset.x + 431) / 2, 20 + this.offset.y);
+
 		if (this._counterText) {
-			this._counterText.pos = new Point(
-				425 + this.offset.X + widthOffset,
-				110 + this.offset.Y
-			);
+			this._counterText.pos = new Point(425 + this.offset.x + widthOffset, 110 + this.offset.y);
 		}
-		if (this._mainMenu.Items.length >= 2) {
-			const tmp = this._mainMenu.Items[1];
-			tmp.size = new Size(431 + this.WidthOffset, 37);
+
+		if (this._mainMenu.items.length >= 2) {
+			const tmp = this._mainMenu.items[1];
+			tmp.size = new Size(431 + this.widthOffset, 37);
 		}
 	}
 
-	public AddItem(item: UIMenuItem) {
+	addItem(item: UIMenuItem) {
 		if (this._justOpened) this._justOpened = false;
-		item.Offset = this.offset;
-		item.Parent = this;
-		item.SetVerticalPosition(
-			this.MenuItems.length * 25 - 37 + this.extraOffset
-		);
-		this.MenuItems.push(item);
 
-		item.Description = this.FormatDescription(item.Description);
+		item.offset = this.offset;
+		item.parent = this;
 
-		this.RefreshIndex();
-		this.RecalculateDescriptionPosition();
+		item.setVerticalPosition(this.menuItems.length * 25 - 37 + this.extraOffset);
+
+		this.menuItems.push(item);
+
+		item.description = this.formatDescription(item.description);
+
+		this.refreshIndex();
+		this.recalculateDescriptionPosition();
 	}
 
-	public RefreshIndex() {
-		if (this.MenuItems.length == 0) {
+	refreshIndex() {
+		if (!this.menuItems.length) {
 			this._activeItem = 1000;
-			this._maxItem = this.MaxItemsOnScreen;
+			this._maxItem = this.maxItemsOnScreen;
 			this._minItem = 0;
+
 			return;
 		}
 
-		for (let i = 0; i < this.MenuItems.length; i++)
-			this.MenuItems[i].Selected = false;
+		for (let i = 0; i < this.menuItems.length; i++)
+			this.menuItems[i].selected = false;
 
-		this._activeItem = 1000 - (1000 % this.MenuItems.length);
-		this._maxItem = this.MaxItemsOnScreen;
+		this._activeItem = 1000 - (1000 % this.menuItems.length);
+		this._maxItem = this.maxItemsOnScreen;
 		this._minItem = 0;
 	}
 
-	public Clear() {
-		this.MenuItems = [];
-		this.RecalculateDescriptionPosition();
+	clear() {
+		this.menuItems = [];
+		this.recalculateDescriptionPosition();
 	}
 
-	public Open() {
-		Common.PlaySound(this.AUDIO_BACK, this.AUDIO_LIBRARY);
-		this.Visible = true;
+	open() {
+		Common.playSound(this.AUDIO_BACK, this.AUDIO_LIBRARY);
+		this.visible = true;
 		this._justOpened = true;
-		this.MenuOpen.emit();
-	}
-	public Close() {
-		Common.PlaySound(this.AUDIO_BACK, this.AUDIO_LIBRARY);
-		this.Visible = false;
-		this.RefreshIndex();
-		this.MenuClose.emit();
+		this.menuOpen.emit();
 	}
 
-	set Subtitle(text: string) {
+	close() {
+		Common.playSound(this.AUDIO_BACK, this.AUDIO_LIBRARY);
+		this.visible = false;
+		this.refreshIndex();
+		this.menuClose.emit();
+	}
+
+	set subtitleCaption(text: string) {
 		this.subtitle = text;
 		this._subtitle.caption = text;
 	}
 
-	public GoLeft() {
+	goLeft(): void {
 		if (
-			!(this.MenuItems[this.CurrentSelection] instanceof UIMenuListItem) &&
-			!(this.MenuItems[this.CurrentSelection] instanceof UIMenuSliderItem)
-		)
-			return;
-		if (this.MenuItems[this.CurrentSelection] instanceof UIMenuListItem) {
-			const it = <UIMenuListItem>this.MenuItems[this.CurrentSelection];
-			if (it.Collection.length == 0) return;
-			it.Index--;
-			Common.PlaySound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
-			this.ListChange.emit(it, it.Index);
-		} else if (
-			this.MenuItems[this.CurrentSelection] instanceof UIMenuSliderItem
+			!(this.menuItems[this.currentSelection] instanceof UIMenuListItem) &&
+			!(this.menuItems[this.currentSelection] instanceof UIMenuSliderItem)
 		) {
-			const it = <UIMenuSliderItem>this.MenuItems[this.CurrentSelection];
-			it.Index = it.Index - 1;
-			Common.PlaySound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
-			this.SliderChange.emit(it, it.Index, it.IndexToItem(it.Index));
+			return;
+		}
+
+		if (this.menuItems[this.currentSelection] instanceof UIMenuListItem) {
+			const it = <UIMenuListItem > this.menuItems[this.currentSelection];
+
+			if (!it.collection.length) return;
+
+			it.index--;
+			Common.playSound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
+			this.listChange.emit(it, it.index);
+		} else if (
+			this.menuItems[this.currentSelection] instanceof UIMenuSliderItem
+		) {
+			const it = this.menuItems[this.currentSelection] as UIMenuSliderItem;
+
+			it.index--;
+			Common.playSound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
+			this.sliderChange.emit(it, it.index, it.indexToItem(it.index));
+			// it.sliderChangedTrigger(it.index);
+		}
+	}
+
+	goRight(): void {
+		if (
+			!(this.menuItems[this.currentSelection] instanceof UIMenuListItem) &&
+			!(this.menuItems[this.currentSelection] instanceof UIMenuSliderItem)
+		) {
+			return;
+		}
+
+		if (this.menuItems[this.currentSelection] instanceof UIMenuListItem) {
+			const it = <UIMenuListItem>this.menuItems[this.currentSelection];
+
+			if (!it.collection.length) return;
+
+			it.index++;
+			Common.playSound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
+			this.listChange.emit(it, it.index);
+		} else if (
+			this.menuItems[this.currentSelection] instanceof UIMenuSliderItem
+		) {
+			const it = <UIMenuSliderItem>this.menuItems[this.currentSelection];
+			it.index++;
+			Common.playSound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
+			this.sliderChange.emit(it, it.index, it.indexToItem(it.index));
 			// it.SliderChangedTrigger(it.Index);
 		}
 	}
 
-	public GoRight() {
-		if (
-			!(this.MenuItems[this.CurrentSelection] instanceof UIMenuListItem) &&
-			!(this.MenuItems[this.CurrentSelection] instanceof UIMenuSliderItem)
-		)
+	selectItem(): void {
+		if (!this.menuItems[this.currentSelection].enabled) {
+			Common.playSound(this.AUDIO_ERROR, this.AUDIO_LIBRARY);
 			return;
-		if (this.MenuItems[this.CurrentSelection] instanceof UIMenuListItem) {
-			const it = <UIMenuListItem>this.MenuItems[this.CurrentSelection];
-			if (it.Collection.length == 0) return;
-			it.Index++;
-			Common.PlaySound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
-			this.ListChange.emit(it, it.Index);
-		} else if (
-			this.MenuItems[this.CurrentSelection] instanceof UIMenuSliderItem
-		) {
-			const it = <UIMenuSliderItem>this.MenuItems[this.CurrentSelection];
-			it.Index++;
-			Common.PlaySound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
-			this.SliderChange.emit(it, it.Index, it.IndexToItem(it.Index));
-			// it.SliderChangedTrigger(it.Index);
 		}
-	}
 
-	public SelectItem() {
-		if (!this.MenuItems[this.CurrentSelection].Enabled) {
-			Common.PlaySound(this.AUDIO_ERROR, this.AUDIO_LIBRARY);
-			return;
-		}
-		const it = <UIMenuCheckboxItem>this.MenuItems[this.CurrentSelection];
-		if (this.MenuItems[this.CurrentSelection] instanceof UIMenuCheckboxItem) {
-			it.Checked = !it.Checked;
-			Common.PlaySound(this.AUDIO_SELECT, this.AUDIO_LIBRARY);
-			this.CheckboxChange.emit(it, it.Checked);
+		const it = this.menuItems[this.currentSelection] as UIMenuCheckboxItem;
+		if (this.menuItems[this.currentSelection] instanceof UIMenuCheckboxItem) {
+			it.checked = !it.checked;
+			Common.playSound(this.AUDIO_SELECT, this.AUDIO_LIBRARY);
+			this.checkboxChange.emit(it, it.checked);
 		} else {
-			Common.PlaySound(this.AUDIO_SELECT, this.AUDIO_LIBRARY);
-			this.ItemSelect.emit(it, this.CurrentSelection);
-			if (this.Children.has(it.Id)) {
-				const subMenu = this.Children.get(it.Id);
-				this.Visible = false;
-				subMenu.Visible = true;
+			Common.playSound(this.AUDIO_SELECT, this.AUDIO_LIBRARY);
+
+			this.itemSelect.emit(it, this.currentSelection);
+
+			if (this.children.has(it.id)) {
+				const subMenu = this.children.get(it.id);
+				this.visible = false;
+
+				subMenu.visible = true;
 				subMenu._justOpened = true;
-				subMenu.MenuOpen.emit();
-				this.MenuChange.emit(subMenu, true);
+				subMenu.menuOpen.emit();
+
+				this.menuChange.emit(subMenu, true);
 			}
 		}
+
 		it.fireEvent();
 	}
 
-	public getMousePosition(relative: boolean = false) {
-		const screenw = Screen.width;
-		const screenh = Screen.height;
+	getMousePosition(relative: boolean = false): [number, number] {
+		const screenW = Screen.width;
+		const screenH = Screen.height;
 		const cursor = mp.gui.cursor.position;
-		let [mouseX, mouseY] = [cursor[0], cursor[1]];
-		if (relative) [mouseX, mouseY] = [cursor[0] / screenw, cursor[1] / screenh];
-		return [mouseX, mouseY];
+
+		if (!relative) return cursor;
+
+		const [mouseX, mouseY] = cursor;
+		return [mouseX / screenW, mouseY / screenH];
 	}
 
-	public GetScreenResolutionMantainRatio(): Size {
+	getScreenResolutionMantainRatio(): Size {
 		const screenw = Screen.width;
 		const screenh = Screen.height;
 		const height = 1080.0;
@@ -431,159 +396,151 @@ export class Menu {
 		return new Size(width, height);
 	}
 
-	public IsMouseInBounds(topLeft: Point, boxSize: Size) {
-		const res = this.GetScreenResolutionMantainRatio();
+	isMouseInBounds(topLeft: Point, boxSize: Size) {
+		const res = this.getScreenResolutionMantainRatio();
 		const [mouseX, mouseY] = this.getMousePosition();
 		return (
-			mouseX >= topLeft.X &&
-			mouseX <= topLeft.X + boxSize.Width &&
-			(mouseY > topLeft.Y && mouseY < topLeft.Y + boxSize.Height)
+			mouseX >= topLeft.x &&
+			mouseX <= topLeft.x + boxSize.width &&
+			(mouseY > topLeft.y && mouseY < topLeft.y + boxSize.height)
 		);
 	}
 
-	public IsMouseInListItemArrows(
+	isMouseInListItemArrows(
 		item,
 		topLeft,
 		safezone // TODO: Ability to scroll left and right
 	) {
-		mp.game.invoke("0x54ce8ac98e120cab".toUpperCase(), "jamyfafi");
+		mp.game.invoke('0x54ce8ac98e120cab'.toUpperCase(), 'jamyfafi');
 		mp.game.ui.addTextComponentSubstringPlayerName(item.Text);
-		var res = this.GetScreenResolutionMantainRatio();
-		var screenw = res.Width;
-		var screenh = res.Height;
+
+		const screenSize = this.getScreenResolutionMantainRatio();
+		const { width: screenW, height: screenH } = screenSize;
+
 		const height = 1080.0;
-		const ratio = screenw / screenh;
+		const ratio = screenW / screenH;
 		var width = height * ratio;
 		const labelSize =
-			mp.game.invoke("0x85f061da64ed2f67".toUpperCase(), 0) * width * 0.35;
+			mp.game.invoke('0x85f061da64ed2f67'.toUpperCase(), 0) * width * 0.35;
 
 		const labelSizeX = 5 + labelSize + 10;
 		const arrowSizeX = 431 - labelSizeX;
-		return this.IsMouseInBounds(topLeft, new Size(labelSizeX, 38))
+		return this.isMouseInBounds(topLeft, new Size(labelSizeX, 38))
 			? 1
-			: this.IsMouseInBounds(
-					new Point(topLeft.X + labelSizeX, topLeft.Y),
-					new Size(arrowSizeX, 38)
-			  )
-			? 2
-			: 0;
+			: this.isMouseInBounds(new Point(topLeft.X + labelSizeX, topLeft.Y), new Size(arrowSizeX, 38)) ? 2 : 0;
 	}
 
-	public ProcessMouse() {
+	processMouse() {
 		if (
-			!this.Visible ||
+			!this.visible ||
 			this._justOpened ||
-			this.MenuItems.length == 0 ||
-			!this.MouseControlsEnabled
+			this.menuItems.length == 0 ||
+			!this.mouseControlsEnabled
 		) {
 			/*Common.EnableControl(0, GameControl.LookUpDown);
                 Common.EnableControl(0, GameControl.LookLeftRight);
                 Common.EnableControl(0, GameControl.Aim);
 				Common.EnableControl(0, GameControl.Attack);*/
-			this.MenuItems.filter(i => i.Hovered).forEach(i => (i.Hovered = false));
+			this.menuItems.filter(i => i.hovered).forEach(i => (i.hovered = false));
 			return;
 		}
 
 		if (!mp.gui.cursor.visible) mp.gui.cursor.visible = true;
-		let limit = this.MenuItems.length - 1;
+		let limit = this.menuItems.length - 1;
 		let counter = 0;
-		if (this.MenuItems.length > this.MaxItemsOnScreen + 1)
+		if (this.menuItems.length > this.maxItemsOnScreen + 1)
 			limit = this._maxItem;
 
 		if (
-			this.IsMouseInBounds(new Point(0, 0), new Size(30, 1080)) &&
-			this.MouseEdgeEnabled
+			this.isMouseInBounds(new Point(0, 0), new Size(30, 1080)) &&
+			this.mouseEdgeEnabled
 		) {
 			mp.game.cam.setGameplayCamRelativeHeading(
 				mp.game.cam.getGameplayCamRelativeHeading() + 5.0
 			);
 			mp.game.ui.setCursorSprite(6);
 		} else if (
-			this.IsMouseInBounds(
-				new Point(this.GetScreenResolutionMantainRatio().Width - 30.0, 0),
+			this.isMouseInBounds(
+				new Point(this.getScreenResolutionMantainRatio().width - 30.0, 0),
 				new Size(30, 1080)
 			) &&
-			this.MouseEdgeEnabled
+			this.mouseEdgeEnabled
 		) {
-			mp.game.cam.setGameplayCamRelativeHeading(
-				mp.game.cam.getGameplayCamRelativeHeading() - 5.0
-			);
+			mp.game.cam.setGameplayCamRelativeHeading(mp.game.cam.getGameplayCamRelativeHeading() - 5.0);
 			mp.game.ui.setCursorSprite(7);
-		} else if (this.MouseEdgeEnabled) {
+		} else if (this.mouseEdgeEnabled) {
 			mp.game.ui.setCursorSprite(1);
 		}
 
 		for (let i = this._minItem; i <= limit; i++) {
-			let xpos = this.offset.X;
-			let ypos = this.offset.Y + 144 - 37 + this.extraOffset + counter * 38;
-			let xsize = 431 + this.WidthOffset;
+			let xpos = this.offset.x;
+			let ypos = this.offset.y + 144 - 37 + this.extraOffset + counter * 38;
+			let xsize = 431 + this.widthOffset;
+
 			const ysize = 38;
-			const uiMenuItem = this.MenuItems[i];
-			if (this.IsMouseInBounds(new Point(xpos, ypos), new Size(xsize, ysize))) {
-				uiMenuItem.Hovered = true;
+			const uiMenuItem = this.menuItems[i];
+
+			if (this.isMouseInBounds(new Point(xpos, ypos), new Size(xsize, ysize))) {
+				uiMenuItem.hovered = true;
 				if (
 					mp.game.controls.isControlJustPressed(0, 24) ||
 					mp.game.controls.isDisabledControlJustPressed(0, 24)
 				)
-					if (uiMenuItem.Selected && uiMenuItem.Enabled) {
+					if (uiMenuItem.selected && uiMenuItem.enabled) {
 						if (
-							this.MenuItems[i] instanceof UIMenuListItem &&
-							this.IsMouseInListItemArrows(
-								this.MenuItems[i],
-								new Point(xpos, ypos),
-								0
-							) > 0
+							this.menuItems[i] instanceof UIMenuListItem &&
+							this.isMouseInListItemArrows(this.menuItems[i], new Point(xpos, ypos), 0) > 0
 						) {
-							const res = this.IsMouseInListItemArrows(
-								this.MenuItems[i],
-								new Point(xpos, ypos),
-								0
-							);
+							const res = this.isMouseInListItemArrows(this.menuItems[i], new Point(xpos, ypos), 0);
+
 							switch (res) {
 								case 1:
-									Common.PlaySound(this.AUDIO_SELECT, this.AUDIO_LIBRARY);
+									Common.playSound(this.AUDIO_SELECT, this.AUDIO_LIBRARY);
 									//this.MenuItems[i].ItemActivate(this);
-									this.MenuItems[i].fireEvent();
-									this.ItemSelect.emit(this.MenuItems[i], i);
+									this.menuItems[i].fireEvent();
+									this.itemSelect.emit(this.menuItems[i], i);
 									break;
 								case 2:
-									var it = <any>this.MenuItems[i];
+									var it = this.menuItems[i] as any;
 									if (
 										(it.Collection == null
 											? it.Items.Count
 											: it.Collection.Count) > 0
 									) {
 										it.Index++;
-										Common.PlaySound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
-										this.ListChange.emit(it, it.Index);
+										Common.playSound(this.AUDIO_LEFTRIGHT, this.AUDIO_LIBRARY);
+										this.listChange.emit(it, it.Index);
 									}
 									break;
 							}
-						} else this.SelectItem();
-					} else if (!uiMenuItem.Selected) {
-						this.CurrentSelection = i;
-						Common.PlaySound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
-						this.IndexChange.emit(this.CurrentSelection);
-						this.SelectItem();
-					} else if (!uiMenuItem.Enabled && uiMenuItem.Selected) {
-						Common.PlaySound(this.AUDIO_ERROR, this.AUDIO_LIBRARY);
+						} else this.selectItem();
+					} else if (!uiMenuItem.selected) {
+						this.currentSelection = i;
+
+						Common.playSound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
+
+						this.indexChange.emit(this.currentSelection);
+						this.selectItem();
+					} else if (!uiMenuItem.enabled && uiMenuItem.selected) {
+						Common.playSound(this.AUDIO_ERROR, this.AUDIO_LIBRARY);
 					}
-			} else uiMenuItem.Hovered = false;
+			} else uiMenuItem.hovered = false;
 			counter++;
 		}
 		const extraY =
 			144 +
-			38 * (this.MaxItemsOnScreen + 1) +
-			this.offset.Y -
+			38 * (this.maxItemsOnScreen + 1) +
+			this.offset.y -
 			37 +
 			this.extraOffset +
-			this.safezoneOffset.Y;
-		const extraX = this.safezoneOffset.X + this.offset.X;
-		if (this.MenuItems.length <= this.MaxItemsOnScreen + 1) return;
+			this.safezoneOffset.y;
+		const extraX = this.safezoneOffset.x + this.offset.x;
+
+		if (this.menuItems.length <= this.maxItemsOnScreen + 1) return;
 		if (
-			this.IsMouseInBounds(
+			this.isMouseInBounds(
 				new Point(extraX, extraY),
-				new Size(431 + this.WidthOffset, 18)
+				new Size(431 + this.widthOffset, 18)
 			)
 		) {
 			this._extraRectangleUp.color = new Color(30, 30, 30, 255);
@@ -591,16 +548,16 @@ export class Menu {
 				mp.game.controls.isControlJustPressed(0, 24) ||
 				mp.game.controls.isDisabledControlJustPressed(0, 24)
 			) {
-				if (this.MenuItems.length > this.MaxItemsOnScreen + 1)
-					this.GoUpOverflow();
-				else this.GoUp();
+				if (this.menuItems.length > this.maxItemsOnScreen + 1)
+					this.goUpOverflow();
+				else this.goUp();
 			}
 		} else this._extraRectangleUp.color = new Color(0, 0, 0, 200);
 
 		if (
-			this.IsMouseInBounds(
+			this.isMouseInBounds(
 				new Point(extraX, extraY + 18),
-				new Size(431 + this.WidthOffset, 18)
+				new Size(431 + this.widthOffset, 18)
 			)
 		) {
 			this._extraRectangleDown.color = new Color(30, 30, 30, 255);
@@ -608,25 +565,29 @@ export class Menu {
 				mp.game.controls.isControlJustPressed(0, 24) ||
 				mp.game.controls.isDisabledControlJustPressed(0, 24)
 			) {
-				if (this.MenuItems.length > this.MaxItemsOnScreen + 1)
-					this.GoDownOverflow();
-				else this.GoDown();
+				if (this.menuItems.length > this.maxItemsOnScreen + 1) {
+					this.goDownOverflow();
+				} else {
+					this.goDown();
+				}
 			}
 		} else this._extraRectangleDown.color = new Color(0, 0, 0, 200);
 	}
 
-	public ProcessControl() {
-		if (!this.Visible) return;
+	processControl() {
+		if (!this.visible) return;
+
 		if (this._justOpened) {
 			this._justOpened = false;
 			return;
 		}
 
 		if (mp.game.controls.isControlJustReleased(0, 177)) {
-			// Back
-			this.GoBack();
+			this.goBack();
 		}
-		if (this.MenuItems.length == 0) return;
+
+		if (!this.menuItems.length) return;
+
 		if (
 			mp.game.controls.isControlPressed(0, 172) &&
 			this.lastUpDownNavigation + 120 < Date.now()
@@ -634,9 +595,11 @@ export class Menu {
 			// isControlJustPressed
 			// Up
 			this.lastUpDownNavigation = Date.now();
-			if (this.MenuItems.length > this.MaxItemsOnScreen + 1)
-				this.GoUpOverflow();
-			else this.GoUp();
+			if (this.menuItems.length > this.maxItemsOnScreen + 1) {
+				this.goUpOverflow();
+			} else {
+				this.goUp();
+			}
 		} else if (mp.game.controls.isControlJustReleased(0, 172)) {
 			this.lastUpDownNavigation = 0;
 		} else if (
@@ -646,9 +609,9 @@ export class Menu {
 			// isControlJustPressed
 			// Down
 			this.lastUpDownNavigation = Date.now();
-			if (this.MenuItems.length > this.MaxItemsOnScreen + 1)
-				this.GoDownOverflow();
-			else this.GoDown();
+			if (this.menuItems.length > this.maxItemsOnScreen + 1)
+				this.goDownOverflow();
+			else this.goDown();
 		} else if (mp.game.controls.isControlJustReleased(0, 173)) {
 			this.lastUpDownNavigation = 0;
 		} else if (
@@ -657,7 +620,7 @@ export class Menu {
 		) {
 			// Left
 			this.lastLeftRightNavigation = Date.now();
-			this.GoLeft();
+			this.goLeft();
 		} else if (mp.game.controls.isControlJustReleased(0, 174)) {
 			this.lastLeftRightNavigation = 0;
 		} else if (
@@ -666,258 +629,251 @@ export class Menu {
 		) {
 			// Right
 			this.lastLeftRightNavigation = Date.now();
-			this.GoRight();
+			this.goRight();
 		} else if (mp.game.controls.isControlJustReleased(0, 175)) {
 			this.lastLeftRightNavigation = 0;
 		} else if (mp.game.controls.isControlJustPressed(0, 201)) {
 			// Select
-			this.SelectItem();
+			this.selectItem();
 		}
 	}
 
-	private FormatDescription(input: string) {
+	private formatDescription(input: string) {
 		if (input.length > 99) input = input.slice(0, 99);
 
-		const maxPixelsPerLine = 425 + this.WidthOffset;
+		const maxPixelsPerLine = 425 + this.widthOffset;
 		let aggregatePixels = 0;
-		let output = "";
-		const words = input.split(" ");
+		let output = '';
+		const words = input.split(' ');
 		for (const word of words) {
-			const offset = StringMeasurer.MeasureString(word);
+			const offset = StringMeasurer.measureString(word);
 			aggregatePixels += offset;
 			if (aggregatePixels > maxPixelsPerLine) {
-				output += "\n" + word + " ";
-				aggregatePixels = offset + StringMeasurer.MeasureString(" ");
+				output += '\n' + word + ' ';
+				aggregatePixels = offset + StringMeasurer.measureString(' ');
 			} else {
-				output += word + " ";
-				aggregatePixels += StringMeasurer.MeasureString(" ");
+				output += word + ' ';
+				aggregatePixels += StringMeasurer.measureString(' ');
 			}
 		}
 		return output;
 	}
 
-	public GoUpOverflow() {
-		if (this.MenuItems.length <= this.MaxItemsOnScreen + 1) return;
-		if (this._activeItem % this.MenuItems.length <= this._minItem) {
-			if (this._activeItem % this.MenuItems.length == 0) {
-				this._minItem = this.MenuItems.length - this.MaxItemsOnScreen - 1;
-				this._maxItem = this.MenuItems.length - 1;
-				this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Selected = false;
-				this._activeItem = 1000 - (1000 % this.MenuItems.length);
-				this._activeItem += this.MenuItems.length - 1;
-				this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Selected = true;
+	goUpOverflow() {
+		if (this.menuItems.length <= this.maxItemsOnScreen + 1) return;
+
+		if (this._activeItem % this.menuItems.length <= this._minItem) {
+			if (this._activeItem % this.menuItems.length == 0) {
+				this._minItem = this.menuItems.length - this.maxItemsOnScreen - 1;
+				this._maxItem = this.menuItems.length - 1;
+				this.menuItems[
+					this._activeItem % this.menuItems.length
+				].selected = false;
+				this._activeItem = 1000 - (1000 % this.menuItems.length);
+				this._activeItem += this.menuItems.length - 1;
+				this.menuItems[
+					this._activeItem % this.menuItems.length
+				].selected = true;
 			} else {
 				this._minItem--;
 				this._maxItem--;
-				this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Selected = false;
+				this.menuItems[this._activeItem % this.menuItems.length].selected = false;
 				this._activeItem--;
-				this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Selected = true;
+				this.menuItems[this._activeItem % this.menuItems.length].selected = true;
 			}
 		} else {
-			this.MenuItems[this._activeItem % this.MenuItems.length].Selected = false;
+			this.menuItems[this._activeItem % this.menuItems.length].selected = false;
 			this._activeItem--;
-			this.MenuItems[this._activeItem % this.MenuItems.length].Selected = true;
+			this.menuItems[this._activeItem % this.menuItems.length].selected = true;
 		}
-		Common.PlaySound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
-		this.IndexChange.emit(this.CurrentSelection);
+		Common.playSound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
+		this.indexChange.emit(this.currentSelection);
 	}
 
-	public GoUp() {
-		if (this.MenuItems.length > this.MaxItemsOnScreen + 1) return;
-		this.MenuItems[this._activeItem % this.MenuItems.length].Selected = false;
+	goUp() {
+		if (this.menuItems.length > this.maxItemsOnScreen + 1) return;
+
+		this.menuItems[this._activeItem % this.menuItems.length].selected = false;
 		this._activeItem--;
-		this.MenuItems[this._activeItem % this.MenuItems.length].Selected = true;
-		Common.PlaySound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
-		this.IndexChange.emit(this.CurrentSelection);
+		this.menuItems[this._activeItem % this.menuItems.length].selected = true;
+
+		Common.playSound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
+		this.indexChange.emit(this.currentSelection);
 	}
 
-	public GoDownOverflow() {
-		if (this.MenuItems.length <= this.MaxItemsOnScreen + 1) return;
-		if (this._activeItem % this.MenuItems.length >= this._maxItem) {
-			if (
-				this._activeItem % this.MenuItems.length ==
-				this.MenuItems.length - 1
-			) {
+	goDownOverflow() {
+		if (this.menuItems.length <= this.maxItemsOnScreen + 1) return;
+
+		if (this._activeItem % this.menuItems.length >= this._maxItem) {
+			if (this._activeItem % this.menuItems.length === this.menuItems.length - 1) {
 				this._minItem = 0;
-				this._maxItem = this.MaxItemsOnScreen;
-				this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Selected = false;
-				this._activeItem = 1000 - (1000 % this.MenuItems.length);
-				this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Selected = true;
+				this._maxItem = this.maxItemsOnScreen;
+				this.menuItems[this._activeItem % this.menuItems.length].selected = false;
+				this._activeItem = 1000 - (1000 % this.menuItems.length);
+				this.menuItems[this._activeItem % this.menuItems.length].selected = true;
 			} else {
 				this._minItem++;
 				this._maxItem++;
-				this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Selected = false;
+				this.menuItems[ this._activeItem % this.menuItems.length ].selected = false;
+
 				this._activeItem++;
-				this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Selected = true;
+				this.menuItems[ this._activeItem % this.menuItems.length ].selected = true;
 			}
 		} else {
-			this.MenuItems[this._activeItem % this.MenuItems.length].Selected = false;
+			this.menuItems[this._activeItem % this.menuItems.length].selected = false;
 			this._activeItem++;
-			this.MenuItems[this._activeItem % this.MenuItems.length].Selected = true;
+			this.menuItems[this._activeItem % this.menuItems.length].selected = true;
 		}
-		Common.PlaySound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
-		this.IndexChange.emit(this.CurrentSelection);
+
+		Common.playSound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
+		this.indexChange.emit(this.currentSelection);
 	}
 
-	public GoDown() {
-		if (this.MenuItems.length > this.MaxItemsOnScreen + 1) return;
-		this.MenuItems[this._activeItem % this.MenuItems.length].Selected = false;
+	goDown(): void {
+		if (this.menuItems.length > this.maxItemsOnScreen + 1) return;
+
+		this.menuItems[this._activeItem % this.menuItems.length].selected = false;
 		this._activeItem++;
-		this.MenuItems[this._activeItem % this.MenuItems.length].Selected = true;
-		Common.PlaySound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
-		this.IndexChange.emit(this.CurrentSelection);
+		this.menuItems[this._activeItem % this.menuItems.length].selected = true;
+
+		Common.playSound(this.AUDIO_UPDOWN, this.AUDIO_LIBRARY);
+		this.indexChange.emit(this.currentSelection);
 	}
 
-	public GoBack() {
-		Common.PlaySound(this.AUDIO_BACK, this.AUDIO_LIBRARY);
-		this.Visible = false;
-		if (this.ParentMenu != null) {
-			this.ParentMenu.Visible = true;
-			this.ParentMenu._justOpened = true;
-			this.ParentMenu.MenuOpen.emit();
-			this.MenuChange.emit(this.ParentMenu, false);
+	goBack(): void {
+		Common.playSound(this.AUDIO_BACK, this.AUDIO_LIBRARY);
+		this.visible = false;
+
+		if (this.parentMenu != null) {
+			this.parentMenu.visible = true;
+			this.parentMenu._justOpened = true;
+			this.parentMenu.menuOpen.emit();
+			this.menuChange.emit(this.parentMenu, false);
 		}
-		this.MenuClose.emit();
+
+		this.menuClose.emit();
 	}
 
-	public BindMenuToItem(menuToBind: Menu, itemToBindTo: UIMenuItem) {
-		menuToBind.ParentMenu = this;
-		menuToBind.ParentItem = itemToBindTo;
-		this.Children.set(itemToBindTo.Id, menuToBind);
+	bindMenuToItem(menuToBind: Menu, itemToBindTo: UIMenuItem): void {
+		menuToBind.parentMenu = this;
+		menuToBind.parentItem = itemToBindTo;
+		this.children.set(itemToBindTo.id, menuToBind);
 	}
 
-	public ReleaseMenuFromItem(releaseFrom: UIMenuItem) {
-		if (!this.Children.has(releaseFrom.Id)) return false;
-		const menu: Menu = this.Children.get(releaseFrom.Id);
-		menu.ParentItem = null;
-		menu.ParentMenu = null;
-		this.Children.delete(releaseFrom.Id);
+	releaseMenuFromItem(releaseFrom: UIMenuItem): boolean {
+		if (!this.children.has(releaseFrom.id)) return false;
+
+		const menu: Menu = this.children.get(releaseFrom.id);
+		menu.parentItem = null;
+		menu.parentMenu = null;
+		this.children.delete(releaseFrom.id);
+
 		return true;
 	}
 
-	private render() {
-		if (!this.Visible) return;
+	private render(): void {
+		if (!this.visible) return;
 
 		if (this._justOpened) {
-			if (this._logo != null && !this._logo.IsTextureDictionaryLoaded)
-				this._logo.LoadTextureDictionary();
-			if (!this._background.IsTextureDictionaryLoaded)
-				this._background.LoadTextureDictionary();
-			if (!this._descriptionRectangle.IsTextureDictionaryLoaded)
-				this._descriptionRectangle.LoadTextureDictionary();
-			if (!this._upAndDownSprite.IsTextureDictionaryLoaded)
-				this._upAndDownSprite.LoadTextureDictionary();
+			if (this._logo != null && !this._logo.isTextureDictionaryLoaded)
+				this._logo.loadTextureDictionary();
+			if (!this._background.isTextureDictionaryLoaded)
+				this._background.loadTextureDictionary();
+			if (!this._descriptionRectangle.isTextureDictionaryLoaded)
+				this._descriptionRectangle.loadTextureDictionary();
+			if (!this._upAndDownSprite.isTextureDictionaryLoaded)
+				this._upAndDownSprite.loadTextureDictionary();
 		}
-		this._mainMenu.Draw();
+		this._mainMenu.draw();
 
-		this.ProcessMouse();
-		this.ProcessControl();
+		this.processMouse();
+		this.processControl();
 
 		this._background.size =
-			this.MenuItems.length > this.MaxItemsOnScreen + 1
-				? new Size(431 + this.WidthOffset, 38 * (this.MaxItemsOnScreen + 1))
-				: new Size(431 + this.WidthOffset, 38 * this.MenuItems.length);
-		this._background.Draw();
+			this.menuItems.length > this.maxItemsOnScreen + 1
+				? new Size(431 + this.widthOffset, 38 * (this.maxItemsOnScreen + 1))
+				: new Size(431 + this.widthOffset, 38 * this.menuItems.length);
+		this._background.draw();
 
-		if (this.MenuItems.length > 0) {
-			this.MenuItems[this._activeItem % this.MenuItems.length].Selected = true;
+		if (this.menuItems.length > 0) {
+			this.menuItems[this._activeItem % this.menuItems.length].selected = true;
 			if (
-				this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Description.trim() !== ""
+				this.menuItems[this._activeItem % this.menuItems.length].description.trim() !== ''
 			) {
-				this.RecalculateDescriptionPosition();
-				let descCaption = this.MenuItems[
-					this._activeItem % this.MenuItems.length
-				].Description;
-				// descCaption = this.FormatDescription(descCaption);
+				this.recalculateDescriptionPosition();
+				let descCaption = this.menuItems[this._activeItem % this.menuItems.length].description;
+				// descCaption = this.formatDescription(descCaption);
 				this._descriptionText.caption = descCaption;
-				const numLines = this._descriptionText.caption.split("\n").length;
-				this._descriptionRectangle.size = new Size(
-					431 + this.WidthOffset,
-					numLines * 25 + 15
-				);
+				const numLines = this._descriptionText.caption.split('\n').length;
+				this._descriptionRectangle.size = new Size(431 + this.widthOffset, numLines * 25 + 15);
 
-				this._descriptionBar.Draw();
-				this._descriptionRectangle.Draw();
-				this._descriptionText.Draw();
+				this._descriptionBar.draw();
+				this._descriptionRectangle.draw();
+				this._descriptionText.draw();
 			}
 		}
 
-		if (this.MenuItems.length <= this.MaxItemsOnScreen + 1) {
+		if (this.menuItems.length <= this.maxItemsOnScreen + 1) {
 			let count = 0;
-			for (const item of this.MenuItems) {
-				item.SetVerticalPosition(count * 38 - 37 + this.extraOffset);
-				item.Draw();
+
+			for (const item of this.menuItems) {
+				item.setVerticalPosition(count * 38 - 37 + this.extraOffset);
+				item.draw();
 				count++;
 			}
+
 			if (this._counterText && this.counterOverride) {
 				this._counterText.caption = this.counterPretext + this.counterOverride;
-				this._counterText.Draw();
+				this._counterText.draw();
 			}
 		} else {
 			let count = 0;
+
 			for (let index = this._minItem; index <= this._maxItem; index++) {
-				var item = this.MenuItems[index];
-				item.SetVerticalPosition(count * 38 - 37 + this.extraOffset);
-				item.Draw();
+				var item = this.menuItems[index];
+				item.setVerticalPosition(count * 38 - 37 + this.extraOffset);
+				item.draw();
 				count++;
 			}
-			this._extraRectangleUp.size = new Size(431 + this.WidthOffset, 18);
-			this._extraRectangleDown.size = new Size(431 + this.WidthOffset, 18);
+
+			this._extraRectangleUp.size = new Size(431 + this.widthOffset, 18);
+			this._extraRectangleDown.size = new Size(431 + this.widthOffset, 18);
 			this._upAndDownSprite.pos = new Point(
-				190 + this.offset.X + this.WidthOffset / 2,
-				147 +
-					37 * (this.MaxItemsOnScreen + 1) +
-					this.offset.Y -
-					37 +
-					this.extraOffset
+				190 + this.offset.x + this.widthOffset / 2,
+				147 + 37 * (this.maxItemsOnScreen + 1) + this.offset.y - 37 + this.extraOffset
 			);
 
-			this._extraRectangleUp.Draw();
-			this._extraRectangleDown.Draw();
-			this._upAndDownSprite.Draw();
+			this._extraRectangleUp.draw();
+			this._extraRectangleDown.draw();
+			this._upAndDownSprite.draw();
+
 			if (this._counterText) {
 				if (!this.counterOverride) {
-					const cap = this.CurrentSelection + 1 + " / " + this.MenuItems.length;
+					const cap = this.currentSelection + 1 + ' / ' + this.menuItems.length;
 					this._counterText.caption = this.counterPretext + cap;
 				} else {
-					this._counterText.caption =
-						this.counterPretext + this.counterOverride;
+					this._counterText.caption = this.counterPretext + this.counterOverride;
 				}
-				this._counterText.Draw();
+
+				this._counterText.draw();
 			}
 		}
 
-		this._logo.Draw();
+		this._logo.draw();
 	}
+
 }
 
-exports.Menu = Menu;
-exports.UIMenuItem = UIMenuItem;
-exports.UIMenuListItem = UIMenuListItem;
-exports.UIMenuCheckboxItem = UIMenuCheckboxItem;
-exports.UIMenuSliderItem = UIMenuSliderItem;
-exports.BadgeStyle = BadgeStyle;
-exports.Point = Point;
-exports.Size = Size;
-exports.Color = Color;
-exports.Font = Font;
-exports.ItemsCollection = ItemsCollection;
-exports.ListItem = ListItem;
+export {
+	UIMenuItem,
+	UIMenuListItem,
+	UIMenuCheckboxItem,
+	UIMenuSliderItem,
+	BadgeStyle,
+	Point,
+	Size,
+	Color,
+	Font,
+	ItemsCollection,
+	ListItem
+};

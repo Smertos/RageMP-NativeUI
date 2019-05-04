@@ -1,19 +1,19 @@
-import { Rectangle } from "modules/rectangle";
-import { Point, Screen, Size } from "utils";
+import { Rectangle } from 'modules/rectangle';
+import { Point, Screen, Size, Color } from 'utils';
 
 export class ResRectangle extends Rectangle {
 	constructor(pos, size, color) {
 		super(pos, size, color);
 	}
 
-	public Draw(): void;
-	public Draw(offset): void;
-	public Draw(pos, size, color): void;
+	draw(): void;
+	draw(offset): void;
+	draw(pos, size, color): void;
 
-	Draw(pos?, size?, color?) {
-		if (!pos) pos = new Size();
+	draw(pos?: Point, size?: Size, color?: Color) {
+		if (!pos) pos = new Point();
 		if (pos && !size && !color) {
-			pos = new Point(this.pos.X + pos.Width, this.pos.Y + pos.Height);
+			pos = new Point(this.pos.x + pos.x, this.pos.y + pos.y);
 			size = this.size;
 			color = this.color;
 		}
@@ -24,10 +24,10 @@ export class ResRectangle extends Rectangle {
 		const ratio = screenw / screenh;
 		const width = height * ratio;
 
-		const w = size.Width / width;
-		const h = size.Height / height;
-		const x = pos.X / width + w * 0.5;
-		const y = pos.Y / height + h * 0.5;
+		const w = size.width / width;
+		const h = size.height / height;
+		const x = pos.x / width + w * 0.5;
+		const y = pos.y / height + h * 0.5;
 
 		mp.game.graphics.drawRect(x, y, w, h, color.R, color.G, color.B, color.A);
 	}

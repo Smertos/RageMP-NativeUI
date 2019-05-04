@@ -1,19 +1,20 @@
 export class Color {
-	public static Empty = new Color(0, 0, 0, 0);
-	public static Transparent = new Color(0, 0, 0, 0);
-	public static Black = new Color(0, 0, 0, 255);
-	public static White = new Color(255, 255, 255, 255);
-	public static WhiteSmoke = new Color(245, 245, 245, 255);
+	static Empty: Color = new Color(0, 0, 0, 0);
+	static Transparent: Color = new Color(0, 0, 0, 0);
+	static Black: Color = new Color(0, 0, 0, 255);
+	static White: Color = new Color(255, 255, 255, 255);
+	static WhiteSmoke: Color = new Color(245, 245, 245, 255);
 
-	public R: number;
-	public G: number;
-	public B: number;
-	public A: number;
+	R: number;
+	G: number;
+	B: number;
+	A: number;
 	
-	constructor(r, g, b, a = 255) {
+	constructor(r: number, g: number, b: number, a: number = 255) {
 		this.R = r;
 		this.G = g;
 		this.B = b;
 		this.A = a;
 	}
+
 }

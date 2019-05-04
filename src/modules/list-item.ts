@@ -1,13 +1,13 @@
-import { uuid } from "utils";
+import { uuid } from 'utils';
 
 export class ListItem {
-	public readonly Id: string = uuid();
+	readonly id: string = uuid();
 
-	public DisplayText: string;
-	public Data: any;
+	displayText: string;
+	data: any;
 
-	constructor(text: string = "", data: any = null) {
-		this.DisplayText = text;
-		this.Data = data;
+	constructor(text: string = '', data: any = null) {
+		this.displayText = text;
+		this.data = data;
 	}
 }

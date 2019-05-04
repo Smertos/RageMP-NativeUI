@@ -1,9 +1,9 @@
 export class Size {
-	public Width: number;
-	public Height: number;
+	width: number;
+	height: number;
 
-	constructor(w: number = 0, h: number = 0) {
-		this.Width = w;
-		this.Height = h;
+	constructor(width: number = 0, height: number = 0) {
+		this.width = width;
+		this.height = height;
 	}
 }

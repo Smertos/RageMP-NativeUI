@@ -1,46 +1,41 @@
-import { Rectangle } from "modules/rectangle";
-import { Screen, Size } from "utils";
+import { Rectangle } from 'modules/rectangle';
+import { Color, Point, Screen, Size } from 'utils';
 
 export class Container extends Rectangle {
-	public Items: any[];
+	public items: any[];
 
-	constructor(pos, size, color) {
-		super(pos, size, color);
-		this.Items = [];
+	constructor(position: Point, size: Size, color: Color) {
+		super(position, size, color);
+		this.items = [];
 	}
 
-	addItem(item) {
-		this.Items.push(item);
+	addItem(item: any) {
+		this.items.push(item);
 	}
 
-	Draw(offset?) {
+	draw(offset?: Point) {
 		if (!this.enabled) return;
-		offset = offset || new Size();
+
+		offset = offset || new Point();
+
 		const screenw = Screen.width;
 		const screenh = Screen.height;
 		const height = 1080.0;
 		const ratio = screenw / screenh;
 		const width = height * ratio;
 
-		const w = this.size.Width / width;
-		const h = this.size.Height / height;
-		const x = (this.pos.X + offset.Width) / width + w * 0.5;
-		const y = (this.pos.Y + offset.Height) / height + h * 0.5;
+		const w = this.size.width / width;
+		const h = this.size.height / height;
+		const x = (this.pos.x + offset.x) / width + w * 0.5;
+		const y = (this.pos.y + offset.y) / height + h * 0.5;
 
 		mp.game.graphics.drawRect(
-			x,
-			y,
-			w,
-			h,
-			this.color.R,
-			this.color.G,
-			this.color.B,
-			this.color.A
+			x, y, w, h,
+			this.color.R, this.color.G, this.color.B, this.color.A
 		);
 
-		for (var item of this.Items)
-			item.Draw(
-				new Size(this.pos.X + offset.Width, this.pos.Y + offset.Height)
-			);
+		for (let item of this.items) {
+			item.Draw(new Size(this.pos.x + offset.x, this.pos.y + offset.y));
+		}
 	}
 }

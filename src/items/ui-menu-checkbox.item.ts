@@ -1,60 +1,50 @@
-import { UIMenuItem } from "items/ui-menu.item";
-import { Sprite } from "modules/sprite";
-import { Color, ILiteEvent, LiteEvent, Point, Size } from "utils";
+import { UIMenuItem } from 'items/ui-menu.item';
+import { Sprite } from 'modules/sprite';
+import { Color, ILiteEvent, LiteEvent, Point, Size } from 'utils';
 
 export class UIMenuCheckboxItem extends UIMenuItem {
 	private readonly _checkedSprite: Sprite;
+	private readonly onCheckedChanged: LiteEvent = new LiteEvent();
 
-	private readonly OnCheckedChanged = new LiteEvent();
-
-	public get CheckedChanged(): ILiteEvent {
-		return this.OnCheckedChanged.expose();
+	get checkedChanged(): ILiteEvent {
+		return this.onCheckedChanged.expose();
 	}
 
-	public Checked: boolean = false;
+	checked: boolean = false;
 
-	constructor(text: string, check: boolean = false, description: string = "") {
+	constructor(text: string, check: boolean = false, description: string = '') {
 		super(text, description);
-		const y = 0;
-		this._checkedSprite = new Sprite(
-			"commonmenu",
-			"shop_box_blank",
-			new Point(410, y + 95),
-			new Size(50, 50)
-		);
-		this.Checked = check;
+
+		this._checkedSprite = new Sprite('commonmenu', 'shop_box_blank', new Point(410, 95), new Size(50, 50));
+		this.checked = check;
 	}
 
-	public SetVerticalPosition(y: number) {
-		super.SetVerticalPosition(y);
-		this._checkedSprite.pos = new Point(
-			380 + this.Offset.X + this.Parent.WidthOffset,
-			y + 138 + this.Offset.Y
-		);
+	setVerticalPosition(y: number): void {
+		super.setVerticalPosition(y);
+
+		this._checkedSprite.pos = new Point(380 + this.offset.x + this.parent.widthOffset, y + 138 + this.offset.y);
 	}
 
-	public Draw() {
-		super.Draw();
-		this._checkedSprite.pos = this._checkedSprite.pos = new Point(
-			380 + this.Offset.X + this.Parent.WidthOffset,
-			this._checkedSprite.pos.Y
-		);
-		const isDefaultHightlitedForeColor =
-			this.HighlightedForeColor == UIMenuItem.DefaultHighlightedForeColor;
-		if (this.Selected && isDefaultHightlitedForeColor) {
-			this._checkedSprite.TextureName = this.Checked
-				? "shop_box_tickb"
-				: "shop_box_blankb";
+	draw(): void {
+		super.draw();
+
+		this._checkedSprite.pos = this._checkedSprite.pos = new Point(380 + this.offset.x + this.parent.widthOffset, this._checkedSprite.pos.y);
+
+		const isDefaultHightlitedForeColor = this.highlightedForeColor == UIMenuItem.defaultHighlightedForeColor;
+
+		if (this.selected && isDefaultHightlitedForeColor) {
+			this._checkedSprite.textureName = this.checked ? 'shop_box_tickb' : 'shop_box_blankb';
 		} else {
-			this._checkedSprite.TextureName = this.Checked
-				? "shop_box_tick"
-				: "shop_box_blank";
+			this._checkedSprite.textureName = this.checked ? 'shop_box_tick' : 'shop_box_blank';
 		}
-		this._checkedSprite.color = this.Enabled
-			? this.Selected && !isDefaultHightlitedForeColor
-				? this.HighlightedForeColor
-				: this.ForeColor
+
+		this._checkedSprite.color = this.enabled
+			? this.selected && !isDefaultHightlitedForeColor
+				? this.highlightedForeColor
+				: this.foreColor
 			: new Color(163, 159, 148);
-		this._checkedSprite.Draw();
+
+		this._checkedSprite.draw();
 	}
+
 }

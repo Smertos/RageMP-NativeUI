@@ -7,7 +7,7 @@ module.exports = {
 
 	output: {
 		filename: 'index.js',
-		path: resolve('lib')
+		path: resolve('.')
 	},
 
 	plugins: [

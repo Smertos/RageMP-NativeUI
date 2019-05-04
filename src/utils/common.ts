@@ -1,5 +1,5 @@
 export class Common {
-	public static PlaySound(audioName: string, audioRef: string) {
+	static playSound(audioName: string, audioRef: string) {
 		mp.game.audio.playSound(-1, audioName, audioRef, false, 0, true);
 	}
 }

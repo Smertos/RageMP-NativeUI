@@ -1,13 +1,29 @@
-import { Color, Point, Size, Screen } from "utils";
+import { Color, Point, Size, Screen } from 'utils';
 
 export class Sprite {
-	public TextureName: string;
-	public pos: Point;
-	public size: Size;
-	public heading: number;
-	public color: Color;
-	public visible: boolean;
 	private _textureDict: string;
+
+	textureName: string;
+	pos: Point;
+	size: Size;
+	heading: number;
+	color: Color;
+	visible: boolean;
+
+	set textureDict(value) {
+		this._textureDict = value;
+
+		if (!this.isTextureDictionaryLoaded) {
+			this.loadTextureDictionary();
+		}
+	}
+	get textureDict(): string {
+		return this._textureDict;
+	}
+
+	get isTextureDictionaryLoaded() {
+		return mp.game.graphics.hasStreamedTextureDictLoaded(this._textureDict);
+	}
 
 	constructor(
 		textureDict,
@@ -17,8 +33,8 @@ export class Sprite {
 		heading = 0,
 		color = new Color(255, 255, 255)
 	) {
-		this.TextureDict = textureDict;
-		this.TextureName = textureName;
+		this.textureDict = textureDict;
+		this.textureName = textureName;
 		this.pos = pos;
 		this.size = size;
 		this.heading = heading;
@@ -26,27 +42,15 @@ export class Sprite {
 		this.visible = true;
 	}
 
-	LoadTextureDictionary() {
+	loadTextureDictionary() {
 		mp.game.graphics.requestStreamedTextureDict(this._textureDict, true);
-		while (!this.IsTextureDictionaryLoaded) {
+		while (!this.isTextureDictionaryLoaded) {
 			//@ts-ignore
 			mp.game.wait(0);
 		}
 	}
 
-	set TextureDict(v) {
-		this._textureDict = v;
-		if (!this.IsTextureDictionaryLoaded) this.LoadTextureDictionary();
-	}
-	get TextureDict(): string {
-		return this._textureDict;
-	}
-
-	get IsTextureDictionaryLoaded() {
-		return mp.game.graphics.hasStreamedTextureDictLoaded(this._textureDict);
-	}
-
-	Draw(
+	draw(
 		textureDictionary?,
 		textureName?,
 		pos?,
@@ -55,8 +59,8 @@ export class Sprite {
 		color?,
 		loadTexture?
 	) {
-		textureDictionary = textureDictionary || this.TextureDict;
-		textureName = textureName || this.TextureName;
+		textureDictionary = textureDictionary || this.textureDict;
+		textureName = textureName || this.textureName;
 		pos = pos || this.pos;
 		size = size || this.size;
 		heading = heading || this.heading;
@@ -64,8 +68,9 @@ export class Sprite {
 		loadTexture = loadTexture || true;
 
 		if (loadTexture) {
-			if (!mp.game.graphics.hasStreamedTextureDictLoaded(textureDictionary))
+			if (!mp.game.graphics.hasStreamedTextureDictLoaded(textureDictionary)) {
 				mp.game.graphics.requestStreamedTextureDict(textureDictionary, true);
+			}
 		}
 
 		const screenw = Screen.width;
@@ -74,23 +79,18 @@ export class Sprite {
 		const ratio = screenw / screenh;
 		const width = height * ratio;
 
-		const w = this.size.Width / width;
-		const h = this.size.Height / height;
-		const x = this.pos.X / width + w * 0.5;
-		const y = this.pos.Y / height + h * 0.5;
+		const w = this.size.width / width;
+		const h = this.size.height / height;
+		const x = this.pos.x / width + w * 0.5;
+		const y = this.pos.y / height + h * 0.5;
 
 		mp.game.graphics.drawSprite(
 			textureDictionary,
 			textureName,
-			x,
-			y,
-			w,
-			h,
+			x, y, w, h,
 			heading,
-			color.R,
-			color.G,
-			color.B,
-			color.A
+			color.R, color.G, color.B, color.A
 		);
 	}
+
 }

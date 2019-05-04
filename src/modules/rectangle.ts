@@ -1,31 +1,32 @@
-import { Element } from "modules/element";
-import { Color, Point, Size } from "utils";
+import { Element } from 'modules/element';
+import { Color, Point, Size } from 'utils';
 
 export class Rectangle extends Element {
-	public pos: Point;
-	public size: Size;
-	public color: Color;
+	pos: Point;
+	size: Size;
+	color: Color;
 
-	constructor(pos, size, color) {
+	constructor(position: Point, size: Size, color: Color) {
 		super();
 
 		this.enabled = true;
-		this.pos = pos;
+		this.pos = position;
 		this.size = size;
 		this.color = color;
 	}
 
-	Draw(pos, size, color) {
-		if (!pos) pos = new Size(0, 0);
+	draw(position: Point, size: Size, color: Color) {
+		if (!position) position = new Point(0, 0);
 		if (!size && !color) {
-			pos = new Point(this.pos.X + pos.Width, this.pos.Y + pos.Height);
+			position = new Point(this.pos.x + position.x, this.pos.y + position.x);
 			size = this.size;
 			color = this.color;
 		}
-		const w = size.Width / 1280.0;
-		const h = size.Height / 720.0;
-		const x = pos.X / 1280.0 + w * 0.5;
-		const y = pos.Y / 720.0 + h * 0.5;
+
+		const w = size.width / 1280.0;
+		const h = size.height / 720.0;
+		const x = position.x / 1280.0 + w * 0.5;
+		const y = position.y / 720.0 + h * 0.5;
 
 		mp.game.graphics.drawRect(x, y, w, h, color.R, color.G, color.B, color.A);
 	}

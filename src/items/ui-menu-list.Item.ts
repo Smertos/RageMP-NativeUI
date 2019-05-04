@@ -1,203 +1,152 @@
-import { BadgeStyle, Font } from "enums";
-import { UIMenuItem } from "items/ui-menu.item";
-import { StringMeasurer } from "modules/string-measurer";
-import { ItemsCollection } from "modules/items-collection";
-import { ListItem } from "modules/list-item";
-import { Alignment, ResText } from "modules/res-text";
-import { Sprite } from "modules/sprite";
-import { Color, LiteEvent, Point, Size } from "utils";
+import { BadgeStyle, Font } from 'enums';
+import { UIMenuItem } from 'items/ui-menu.item';
+import { StringMeasurer } from 'modules/string-measurer';
+import { ItemsCollection } from 'modules/items-collection';
+import { ListItem } from 'modules/list-item';
+import { Alignment, ResText } from 'modules/res-text';
+import { Sprite } from 'modules/sprite';
+import { Color, LiteEvent, Point, Size } from 'utils';
 
 export class UIMenuListItem extends UIMenuItem {
-	protected _itemText: ResText;
+	private readonly onListChanged = new LiteEvent();
 
+	private currOffset: number = 0;
+	private _collection: Array<ListItem> = [];
+
+	protected _itemText: ResText;
 	protected _arrowLeft: Sprite;
 	protected _arrowRight: Sprite;
 
-	private currOffset: number = 0;
-
-	private collection: Array<ListItem> = [];
-
-	get Collection() {
-		return this.collection;
+	get collection(): Array<ListItem> {
+		return this._collection;
 	}
-	set Collection(v) {
-		if (!v) throw new Error("The collection can't be null");
-		this.collection = v;
-	}
+	set collection(value) {
+		if (!value) {
+			throw new Error('The collection can\'t be null');
+		}
 
-	set SelectedItem(v: ListItem) {
-		const idx = this.Collection.findIndex(li => li.Id === v.Id);
-		if (idx > 0) this.Index = idx;
-		else this.Index = 0;
+		this._collection = value;
 	}
 
-	get SelectedItem() {
-		return this.Collection.length > 0 ? this.Collection[this.Index] : null;
+	set selectedItem(value: ListItem) {
+		const idx = this.collection.findIndex(li => li.id === value.id);
+		this.index = Math.max(idx, 0);
 	}
 
-	get SelectedValue() {
-		return this.SelectedItem == null
-			? null
-			: this.SelectedItem.Data == null
-			? this.SelectedItem.DisplayText
-			: this.SelectedItem.Data;
+	get selectedItem() {
+		return this.collection.length ? this.collection[this.index] : null;
 	}
 
-	public ScrollingEnabled: boolean = true;
+	get selectedValue() {
+		if (!this.selectedItem) return null;
 
-	public HoldTimeBeforeScroll: number = 200;
+		return this.selectedItem.data == null ? this.selectedItem.displayText : this.selectedItem.data;
+	}
 
-	private readonly OnListChanged = new LiteEvent();
+	scrollingEnabled: boolean = true;
+	holdTimeBeforeScroll: number = 200;
 
-	public get ListChanged() {
-		return this.OnListChanged.expose();
+	public get listChanged() {
+		return this.onListChanged.expose();
 	}
 
 	protected _index: number = 0;
 
-	get Index() {
-		if (this.Collection == null) return -1;
-		if (this.Collection != null && this.Collection.length == 0) return -1;
+	get index(): number {
+		if (this.collection == null) return -1;
+		if (this.collection != null && !this.collection.length) return -1;
 
-		return this._index % this.Collection.length;
+		return this._index % this.collection.length;
 	}
-	set Index(value) {
-		if (this.Collection == null) return;
-		if (this.Collection != null && this.Collection.length == 0) return;
+	set index(value: number) {
+		if (this.collection == null) return;
+		if (this.collection != null && this.collection.length == 0) return;
 
-		this._index = 100000 - (100000 % this.Collection.length) + value;
+		this._index = 100000 - (100000 % this.collection.length) + value;
 
-		const caption =
-			this.Collection.length >= this.Index
-				? this.Collection[this.Index].DisplayText
-				: " ";
-		this.currOffset = StringMeasurer.MeasureString(caption);
+		const caption = this.collection.length >= this.index ? this.collection[this.index].displayText : ' ';
+		this.currOffset = StringMeasurer.measureString(caption);
 	}
 
 	constructor(
 		text: string,
-		description: string = "",
+		description: string = '',
 		collection: ItemsCollection = new ItemsCollection([]),
 		startIndex: number = 0
 	) {
 		super(text, description);
-		let y = 0;
-		this.Collection = collection.getListItems();
-		this.Index = startIndex;
-		this._arrowLeft = new Sprite(
-			"commonmenu",
-			"arrowleft",
-			new Point(110, 105 + y),
-			new Size(30, 30)
-		);
-		this._arrowRight = new Sprite(
-			"commonmenu",
-			"arrowright",
-			new Point(280, 105 + y),
-			new Size(30, 30)
-		);
-		this._itemText = new ResText(
-			"",
-			new Point(290, y + 104),
-			0.35,
-			Color.White,
-			Font.ChaletLondon,
-			Alignment.Right
-		);
+
+		this.collection = collection.getListItems();
+		this.index = startIndex;
+
+		this._arrowLeft = new Sprite('commonmenu', 'arrowleft', new Point(110, 105), new Size(30, 30));
+		this._arrowRight = new Sprite('commonmenu', 'arrowright', new Point(280, 105), new Size(30, 30));
+
+		this._itemText = new ResText('', new Point(290, 104), 0.35, Color.White, Font.ChaletLondon, Alignment.Right);
 	}
 
-	public setCollection(collection: ItemsCollection) {
-		this.Collection = collection.getListItems();
+	setCollection(collection: ItemsCollection) {
+		this.collection = collection.getListItems();
 	}
 
-	public setCollectionItem(
+	setCollectionItem(
 		index: number,
 		item: ListItem | string,
 		resetSelection: boolean = true
 	) {
-		if (index > this.Collection.length)
-			// Placeholder for formatting
-			throw new Error("Index out of bounds");
-		if (typeof item === "string")
-			// Placeholder for formatting
+		if (index > this.collection.length) {
+			throw new Error('Index out of bounds');
+		}
+
+		if (typeof item === 'string') {
 			item = new ListItem(item);
+		}
 
-		this.Collection.splice(index, 1, item);
+		this.collection.splice(index, 1, item);
 
-		if (resetSelection)
-			// Placeholder for formatting
-			this.Index = 0;
+		if (resetSelection) {
+			this.index = 0;
+		}
 	}
 
-	public SetVerticalPosition(y: number) {
-		this._arrowLeft.pos = new Point(
-			300 + this.Offset.X + this.Parent.WidthOffset,
-			147 + y + this.Offset.Y
-		);
-		this._arrowRight.pos = new Point(
-			400 + this.Offset.X + this.Parent.WidthOffset,
-			147 + y + this.Offset.Y
-		);
-		this._itemText.pos = new Point(
-			300 + this.Offset.X + this.Parent.WidthOffset,
-			y + 147 + this.Offset.Y
-		);
-		super.SetVerticalPosition(y);
+	setVerticalPosition(y: number) {
+		this._arrowLeft.pos = new Point(300 + this.offset.x + this.parent.widthOffset, 147 + y + this.offset.y);
+		this._arrowRight.pos = new Point(400 + this.offset.x + this.parent.widthOffset, 147 + y + this.offset.y);
+		this._itemText.pos = new Point(300 + this.offset.x + this.parent.widthOffset, y + 147 + this.offset.y);
+
+		super.setVerticalPosition(y);
 	}
 
-	public SetRightLabel(text: string) {
+	setRightLabel(text: string) {
 		return this;
 	}
 
-	public SetRightBadge(badge: BadgeStyle) {
+	setRightBadge(badge: BadgeStyle) {
 		return this;
 	}
 
-	public Draw() {
-		super.Draw();
-		const caption =
-			this.Collection.length >= this.Index
-				? this.Collection[this.Index].DisplayText
-				: " ";
+	draw() {
+		super.draw();
+
+		const caption = this.collection.length >= this.index ? this.collection[this.index].displayText : ' ';
 		const offset = this.currOffset;
 
-		this._itemText.color = this.Enabled
-			? this.Selected
-				? this.HighlightedForeColor
-				: this.ForeColor
-			: new Color(163, 159, 148);
-
 		this._itemText.caption = caption;
+		this._itemText.color = this.enabled ? (this.selected ? this.highlightedForeColor : this.foreColor) : new Color(163, 159, 148);
+		this._arrowLeft.color = this.enabled ? (this.selected ? this.highlightedForeColor : this.foreColor) : new Color(163, 159, 148);
+		this._arrowRight.color = this.enabled ? (this.selected ? this.highlightedForeColor : this.foreColor) : new Color(163, 159, 148);
 
-		this._arrowLeft.color = this.Enabled
-			? this.Selected
-				? this.HighlightedForeColor
-				: this.ForeColor
-			: new Color(163, 159, 148);
-		this._arrowRight.color = this.Enabled
-			? this.Selected
-				? this.HighlightedForeColor
-				: this.ForeColor
-			: new Color(163, 159, 148);
+		this._arrowLeft.pos = new Point(375 - offset + this.offset.x + this.parent.widthOffset, this._arrowLeft.pos.y);
 
-		this._arrowLeft.pos = new Point(
-			375 - offset + this.Offset.X + this.Parent.WidthOffset,
-			this._arrowLeft.pos.Y
-		);
-
-		if (this.Selected) {
-			this._arrowLeft.Draw();
-			this._arrowRight.Draw();
-			this._itemText.pos = new Point(
-				405 + this.Offset.X + this.Parent.WidthOffset,
-				this._itemText.pos.Y
-			);
+		if (this.selected) {
+			this._arrowLeft.draw();
+			this._arrowRight.draw();
+			this._itemText.pos = new Point(405 + this.offset.x + this.parent.widthOffset, this._itemText.pos.y);
 		} else {
-			this._itemText.pos = new Point(
-				420 + this.Offset.X + this.Parent.WidthOffset,
-				this._itemText.pos.Y
-			);
+			this._itemText.pos = new Point(420 + this.offset.x + this.parent.widthOffset, this._itemText.pos.y);
 		}
-		this._itemText.Draw();
+
+		this._itemText.draw();
 	}
+
 }

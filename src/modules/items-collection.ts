@@ -1,26 +1,28 @@
-import { ListItem } from "modules/list-item";
+import { ListItem } from 'modules/list-item';
 
 export class ItemsCollection {
 	private items: any[];
 
 	constructor(items: any[]) {
-		if (items.length === 0) throw new Error("ItemsCollection cannot be empty");
+		if (items.length === 0) throw new Error('ItemsCollection cannot be empty');
 		this.items = items;
 	}
 
-	public length() {
+	length(): number {
 		return this.items.length;
 	}
 
-	public getListItems() {
+	getListItems(): Array<any> {
 		const items = [];
+
 		for (const item of this.items) {
 			if (item instanceof ListItem) {
 				items.push(item);
-			} else if (typeof item == "string") {
+			} else if (typeof item == 'string') {
 				items.push(new ListItem(item.toString()));
 			}
 		}
+
 		return items;
 	}
 }

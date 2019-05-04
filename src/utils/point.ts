@@ -1,29 +1,26 @@
 export class Point {
-	static Parse(point: number[]): Point;
-	static Parse(point: { X: number; Y: number }): Point;
-	static Parse(arg): Point {
-		if (typeof arg === "object") {
-			if (arg.length) {
-				// Array
-				return new Point(arg[0], arg[1]);
-			} else if (arg.X && arg.Y) {
-				// Object
-				return new Point(arg.X, arg.Y);
-			}
-		} else if (typeof arg === "string") {
-			if (arg.indexOf(",") !== -1) {
-				const arr = arg.split(",");
-				return new Point(parseFloat(arr[0]), parseFloat(arr[1]));
-			}
+	static parse(point: number[]): Point;
+	static parse(point: { x: number; y: number }): Point;
+	static parse(point: string): Point;
+	static parse(arg: any): Point {
+		if (Array.isArray(arg)) {
+			const [x, y] = arg;
+			return new Point(x, y);
+		} else if (typeof arg === 'object' && arg.x && arg.y) {
+			return new Point(arg.x, arg.y);
+		} else if (typeof arg === 'string' && arg.indexOf(',') !== -1) {
+			const [x, y] = arg.split(',').map(parseFloat);
+			return new Point(x, y);
 		}
+
 		return new Point(0, 0);
 	}
 
-	public X: number = 0;
-	public Y: number = 0;
+	x: number;
+	y: number;
 
-	constructor(x: number, y: number) {
-		this.X = x;
-		this.Y = y;
+	constructor(x: number = 0, y: number = 0) {
+		this.x = x;
+		this.y = y;
 	}
 }

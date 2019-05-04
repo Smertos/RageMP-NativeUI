@@ -1,5 +1,5 @@
 export class Element {
-	public enabled: boolean;
+	enabled: boolean;
 
 	constructor() {
 		this.enabled = true;

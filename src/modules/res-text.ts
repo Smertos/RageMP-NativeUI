@@ -1,5 +1,5 @@
-import { Text } from "modules/text";
-import { Color, Point, Screen, Size } from "utils";
+import { Text } from 'modules/text';
+import { Color, Point, Screen, Size } from 'utils';
 
 export enum Alignment {
 	Left,
@@ -8,28 +8,24 @@ export enum Alignment {
 }
 
 export class ResText extends Text {
-	public TextAlignment: Alignment = Alignment.Left;
-	public DropShadow: boolean;
-	public Outline: boolean;
-	public WordWrap: Size;
+	textAlignment: Alignment = Alignment.Left;
+	dropShadow: boolean;
+	outline: boolean;
+	wordWrap: Size;
 
 	constructor(caption, pos, scale, color?, font?, justify?) {
-		super(
-			caption,
-			pos,
-			scale,
-			color || new Color(255, 255, 255),
-			font || 0,
-			false
-		);
-		if (justify) this.TextAlignment = justify;
+		super(caption, pos, scale, color || new Color(255, 255, 255), font || 0, false);
+
+		if (justify) {
+			this.textAlignment = justify;
+		}
 	}
 
-	public Draw(): void;
-	public Draw(offset: Size): void;
-	public Draw(caption, pos, scale, color, font, arg2): void;
+	draw(): void;
+	draw(offset: Size): void;
+	draw(caption, pos, scale, color, font, arg2): void;
 
-	Draw(
+	draw(
 		arg1?,
 		pos?,
 		scale?,
@@ -43,21 +39,24 @@ export class ResText extends Text {
 		let caption = arg1;
 		let centered = arg2;
 		let textAlignment = arg2;
+
 		if (!arg1) arg1 = new Size(0, 0);
+
 		if (arg1 && !pos) {
-			textAlignment = this.TextAlignment;
+			textAlignment = this.textAlignment;
 			caption = this.caption;
-			pos = new Point(this.pos.X + arg1.Width, this.pos.Y + arg1.Height);
+			pos = new Point(this.pos.x + arg1.Width, this.pos.y + arg1.Height);
 			scale = this.scale;
 			color = this.color;
 			font = this.font;
+
 			if (centered == true || centered == false) {
 				centered = this.centered;
 			} else {
 				centered = undefined;
-				dropShadow = this.DropShadow;
-				outline = this.Outline;
-				wordWrap = this.WordWrap;
+				dropShadow = this.dropShadow;
+				outline = this.outline;
+				wordWrap = this.wordWrap;
 			}
 		}
 
@@ -68,8 +67,8 @@ export class ResText extends Text {
 		const ratio = screenw / screenh;
 		const width = height * ratio;
 
-		const x = this.pos.X / width;
-		const y = this.pos.Y / height;
+		const x = this.pos.x / width;
+		const y = this.pos.y / height;
 
 		mp.game.ui.setTextFont(parseInt(font));
 		mp.game.ui.setTextScale(1.0, scale);
@@ -80,7 +79,7 @@ export class ResText extends Text {
 		} else {
 			if (dropShadow) mp.game.ui.setTextDropshadow(2, 0, 0, 0, 0);
 
-			if (outline) console.warn("not working!");
+			if (outline) console.warn('not working!');
 
 			switch (textAlignment) {
 				case Alignment.Centered:
@@ -93,18 +92,19 @@ export class ResText extends Text {
 			}
 
 			if (wordWrap) {
-				const xsize = (this.pos.X + wordWrap.Width) / width;
+				const xsize = (this.pos.x + wordWrap.Width) / width;
 				mp.game.ui.setTextWrap(x, xsize);
 			}
 		}
 
-		mp.game.ui.setTextEntry("STRING");
-		ResText.AddLongString(caption);
+		mp.game.ui.setTextEntry('STRING');
+		ResText.addLongString(caption);
 		mp.game.ui.drawText(x, y);
 	}
 
-	public static AddLongString(str: string) {
+	static addLongString(str: string) {
 		const strLen = 99;
+
 		for (var i = 0; i < str.length; i += strLen) {
 			const substr = str.substr(i, Math.min(strLen, str.length - i));
 			mp.game.ui.addTextComponentSubstringPlayerName(substr);
