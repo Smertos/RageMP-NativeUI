@@ -77,7 +77,7 @@ export class Menu {
 	}
 
 
-	constructor(title: string, subtitle: string, offset: Point, spriteLibrary: string, spriteName: string) {
+	constructor(title: string, subtitle: string, offset: Point, spriteLibrary?: string, spriteName?: string) {
 		if (!(offset instanceof Point)) offset = Point.parse(offset);
 
 		this.title = title;

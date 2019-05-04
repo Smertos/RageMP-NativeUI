@@ -100,7 +100,7 @@ declare module 'native-ui/index' {
       mouseControlsEnabled: boolean;
       menuItems: (UIMenuItem | UIMenuListItem | UIMenuSliderItem | UIMenuCheckboxItem)[];
       currentSelection: number;
-      constructor(title: string, subtitle: string, offset: Point, spriteLibrary: string, spriteName: string);
+      constructor(title: string, subtitle: string, offset: Point, spriteLibrary?: string, spriteName?: string);
       private recalculateDescriptionPosition;
       setMenuWidthOffset(widthOffset: number): void;
       addItem(item: UIMenuItem): void;
