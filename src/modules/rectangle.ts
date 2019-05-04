@@ -1,7 +1,5 @@
-import { Color } from "../utils/Color";
-import { Point } from "../utils/Point";
-import { Size } from "../utils/Size";
-import { Element } from "./Element";
+import { Element } from "modules/element";
+import { Color, Point, Size } from "utils";
 
 export class Rectangle extends Element {
 	public pos: Point;

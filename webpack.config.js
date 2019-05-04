@@ -3,11 +3,11 @@ const { resolve } = require('path');
 
 module.exports = {
 
-	entry: './index',
+	entry: './src/index',
 
 	output: {
 		filename: 'index.js',
-		path: resolve('.')
+		path: resolve('lib')
 	},
 
 	plugins: [
@@ -25,6 +25,7 @@ module.exports = {
 	},
 
 	resolve: {
-		extensions: ['.ts']
+		extensions: ['.ts'],
+		modules: ['src', 'node_modules']
 	}
 };

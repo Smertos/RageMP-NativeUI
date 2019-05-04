@@ -1,23 +1,17 @@
-import { BadgeStyle } from "../enums/BadgeStyle";
-import { Font } from "../enums/Font";
-import { ItemsCollection } from "../modules/ItemsCollection";
-import { ListItem } from "../modules/ListItem";
-import { Alignment, ResText } from "../modules/ResText";
-import { Sprite } from "../modules/Sprite";
-import { Color } from "../utils/Color";
-import { LiteEvent } from "../utils/LiteEvent";
-import { Point } from "../utils/Point";
-import { Size } from "../utils/Size";
-import { StringMeasurer } from "../modules/StringMeasurer";
-import { UIMenuItem } from "./UIMenuItem";
+import { BadgeStyle, Font } from "enums";
+import { UIMenuItem } from "items/ui-menu.item";
+import { StringMeasurer } from "modules/string-measurer";
+import { ItemsCollection } from "modules/items-collection";
+import { ListItem } from "modules/list-item";
+import { Alignment, ResText } from "modules/res-text";
+import { Sprite } from "modules/sprite";
+import { Color, LiteEvent, Point, Size } from "utils";
 
 export class UIMenuListItem extends UIMenuItem {
 	protected _itemText: ResText;
 
 	protected _arrowLeft: Sprite;
 	protected _arrowRight: Sprite;
-
-	private _holdTime: number;
 
 	private currOffset: number = 0;
 

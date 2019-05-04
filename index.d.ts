@@ -1,4 +1,4 @@
-declare module 'native-ui/enums/BadgeStyle' {
+declare module 'native-ui/enums/badge-style' {
   export enum BadgeStyle {
       None = 0,
       BronzeMedal = 1,
@@ -26,7 +26,7 @@ declare module 'native-ui/enums/BadgeStyle' {
   }
 
 }
-declare module 'native-ui/enums/Font' {
+declare module 'native-ui/enums/font' {
   export enum Font {
       ChaletLondon = 0,
       HouseScript = 1,
@@ -36,14 +36,14 @@ declare module 'native-ui/enums/Font' {
   }
 
 }
+declare module 'native-ui/enums/index' {
+  export { BadgeStyle } from 'native-ui/enums/badge-style';
+  export { Font } from 'native-ui/enums/font';
+
+}
 declare module 'native-ui/index' {
-  import { UIMenuCheckboxItem } from "native-ui/items/UIMenuCheckboxItem";
-  import { UIMenuItem } from "native-ui/items/UIMenuItem";
-  import { UIMenuListItem } from "native-ui/items/UIMenuListItem";
-  import { UIMenuSliderItem } from "native-ui/items/UIMenuSliderItem";
-  import { LiteEvent } from "native-ui/utils/LiteEvent";
-  import { Point } from "native-ui/utils/Point";
-  import { Size } from "native-ui/utils/Size";
+  import { UIMenuCheckboxItem, UIMenuItem, UIMenuListItem, UIMenuSliderItem } from "items";
+  import { LiteEvent, Point, Size } from "utils";
   export class Menu {
       readonly Id: string;
       private title;
@@ -128,9 +128,16 @@ declare module 'native-ui/index' {
   }
 
 }
-declare module 'native-ui/items/UIMenuCheckboxItem' {
-  import { ILiteEvent } from "native-ui/utils/LiteEvent";
-  import { UIMenuItem } from "native-ui/items/UIMenuItem";
+declare module 'native-ui/items/index' {
+  export { UIMenuCheckboxItem } from 'native-ui/items/ui-menu-checkbox';
+  export { UIMenuItem } from 'native-ui/items/ui-menu';
+  export { UIMenuListItem } from 'native-ui/items/ui-menu-list';
+  export { UIMenuSliderItem } from 'native-ui/items/ui-menu-slider';
+
+}
+declare module 'native-ui/items/ui-menu-checkbox' {
+  import { UIMenuItem } from "items/ui-menu.item";
+  import { ILiteEvent } from "utils";
   export class UIMenuCheckboxItem extends UIMenuItem {
       private readonly _checkedSprite;
       private readonly OnCheckedChanged;
@@ -142,14 +149,67 @@ declare module 'native-ui/items/UIMenuCheckboxItem' {
   }
 
 }
-declare module 'native-ui/items/UIMenuItem' {
-  import { BadgeStyle } from "native-ui/enums/BadgeStyle";
+declare module 'native-ui/items/ui-menu-list' {
+  import { BadgeStyle } from "enums";
+  import { UIMenuItem } from "items/ui-menu.item";
+  import { ItemsCollection } from "modules/items-collection";
+  import { ListItem } from "modules/list-item";
+  import { ResText } from "modules/res-text";
+  import { Sprite } from "modules/sprite";
+  export class UIMenuListItem extends UIMenuItem {
+      protected _itemText: ResText;
+      protected _arrowLeft: Sprite;
+      protected _arrowRight: Sprite;
+      private currOffset;
+      private collection;
+      Collection: ListItem[];
+      SelectedItem: ListItem;
+      readonly SelectedValue: any;
+      ScrollingEnabled: boolean;
+      HoldTimeBeforeScroll: number;
+      private readonly OnListChanged;
+      readonly ListChanged: import("native-ui/utils/index").ILiteEvent;
+      protected _index: number;
+      Index: number;
+      constructor(text: string, description?: string, collection?: ItemsCollection, startIndex?: number);
+      setCollection(collection: ItemsCollection): void;
+      setCollectionItem(index: number, item: ListItem | string, resetSelection?: boolean): void;
+      SetVerticalPosition(y: number): void;
+      SetRightLabel(text: string): this;
+      SetRightBadge(badge: BadgeStyle): this;
+      Draw(): void;
+  }
+
+}
+declare module 'native-ui/items/ui-menu-slider' {
+  import { BadgeStyle } from "enums";
+  import { UIMenuItem } from "items/ui-menu.item";
+  export class UIMenuSliderItem extends UIMenuItem {
+      private _arrowLeft;
+      private _arrowRight;
+      private _rectangleBackground;
+      private _rectangleSlider;
+      private _rectangleDivider;
+      private _items;
+      private _index;
+      Index: number;
+      constructor(text: string, items: any[], index: number, description?: string, divider?: boolean);
+      SetVerticalPosition(y: number): void;
+      IndexToItem(index: number): any;
+      Draw(): void;
+      SetRightBadge(badge: BadgeStyle): void;
+      SetRightLabel(text: string): void;
+  }
+
+}
+declare module 'native-ui/items/ui-menu' {
+  import { BadgeStyle } from "native-ui/enums/badge-style";
   import { Menu } from "native-ui/index";
-  import { ResRectangle } from "native-ui/modules/ResRectangle";
-  import { ResText } from "native-ui/modules/ResText";
-  import { Sprite } from "native-ui/modules/Sprite";
-  import { Color } from "native-ui/utils/Color";
-  import { Point } from "native-ui/utils/Point";
+  import { ResRectangle } from "native-ui/modules/res-rectangle";
+  import { ResText } from "native-ui/modules/res-text";
+  import { Sprite } from "native-ui/modules/sprite";
+  import { Color } from "native-ui/utils/color";
+  import { Point } from "native-ui/utils/point";
   export class UIMenuItem {
       readonly Id: string;
       static readonly DefaultBackColor: Color;
@@ -192,62 +252,8 @@ declare module 'native-ui/items/UIMenuItem' {
   }
 
 }
-declare module 'native-ui/items/UIMenuListItem' {
-  import { BadgeStyle } from "native-ui/enums/BadgeStyle";
-  import { ItemsCollection } from "native-ui/modules/ItemsCollection";
-  import { ListItem } from "native-ui/modules/ListItem";
-  import { ResText } from "native-ui/modules/ResText";
-  import { Sprite } from "native-ui/modules/Sprite";
-  import { UIMenuItem } from "native-ui/items/UIMenuItem";
-  export class UIMenuListItem extends UIMenuItem {
-      protected _itemText: ResText;
-      protected _arrowLeft: Sprite;
-      protected _arrowRight: Sprite;
-      private _holdTime;
-      private currOffset;
-      private collection;
-      Collection: ListItem[];
-      SelectedItem: ListItem;
-      readonly SelectedValue: any;
-      ScrollingEnabled: boolean;
-      HoldTimeBeforeScroll: number;
-      private readonly OnListChanged;
-      readonly ListChanged: import("native-ui/utils/LiteEvent").ILiteEvent;
-      protected _index: number;
-      Index: number;
-      constructor(text: string, description?: string, collection?: ItemsCollection, startIndex?: number);
-      setCollection(collection: ItemsCollection): void;
-      setCollectionItem(index: number, item: ListItem | string, resetSelection?: boolean): void;
-      SetVerticalPosition(y: number): void;
-      SetRightLabel(text: string): this;
-      SetRightBadge(badge: BadgeStyle): this;
-      Draw(): void;
-  }
-
-}
-declare module 'native-ui/items/UIMenuSliderItem' {
-  import { BadgeStyle } from "native-ui/enums/BadgeStyle";
-  import { UIMenuItem } from "native-ui/items/UIMenuItem";
-  export class UIMenuSliderItem extends UIMenuItem {
-      private _arrowLeft;
-      private _arrowRight;
-      private _rectangleBackground;
-      private _rectangleSlider;
-      private _rectangleDivider;
-      private _items;
-      private _index;
-      Index: number;
-      constructor(text: string, items: any[], index: number, description?: string, divider?: boolean);
-      SetVerticalPosition(y: number): void;
-      IndexToItem(index: number): any;
-      Draw(): void;
-      SetRightBadge(badge: BadgeStyle): void;
-      SetRightLabel(text: string): void;
-  }
-
-}
-declare module 'native-ui/modules/Container' {
-  import { Rectangle } from "native-ui/modules/Rectangle";
+declare module 'native-ui/modules/container' {
+  import { Rectangle } from "modules/rectangle";
   export class Container extends Rectangle {
       Items: any[];
       constructor(pos: any, size: any, color: any);
@@ -256,14 +262,27 @@ declare module 'native-ui/modules/Container' {
   }
 
 }
-declare module 'native-ui/modules/Element' {
+declare module 'native-ui/modules/element' {
   export class Element {
       enabled: boolean;
       constructor();
   }
 
 }
-declare module 'native-ui/modules/ItemsCollection' {
+declare module 'native-ui/modules/index' {
+  export { Container } from 'native-ui/modules/container';
+  export { Element } from 'native-ui/modules/element';
+  export { ItemsCollection } from 'native-ui/modules/items-collection';
+  export { ListItem } from 'native-ui/modules/list-item';
+  export { Rectangle } from 'native-ui/modules/rectangle';
+  export { ResRectangle } from 'native-ui/modules/res-rectangle';
+  export { Alignment, ResText } from 'native-ui/modules/res-text';
+  export { Sprite } from 'native-ui/modules/sprite';
+  export { StringMeasurer } from 'native-ui/modules/string-measurer';
+  export { Text } from 'native-ui/modules/text';
+
+}
+declare module 'native-ui/modules/items-collection' {
   export class ItemsCollection {
       private items;
       constructor(items: any[]);
@@ -272,7 +291,7 @@ declare module 'native-ui/modules/ItemsCollection' {
   }
 
 }
-declare module 'native-ui/modules/ListItem' {
+declare module 'native-ui/modules/list-item' {
   export class ListItem {
       readonly Id: string;
       DisplayText: string;
@@ -281,11 +300,9 @@ declare module 'native-ui/modules/ListItem' {
   }
 
 }
-declare module 'native-ui/modules/Rectangle' {
-  import { Color } from "native-ui/utils/Color";
-  import { Point } from "native-ui/utils/Point";
-  import { Size } from "native-ui/utils/Size";
-  import { Element } from "native-ui/modules/Element";
+declare module 'native-ui/modules/rectangle' {
+  import { Element } from "modules/element";
+  import { Color, Point, Size } from "utils";
   export class Rectangle extends Element {
       pos: Point;
       size: Size;
@@ -295,8 +312,8 @@ declare module 'native-ui/modules/Rectangle' {
   }
 
 }
-declare module 'native-ui/modules/ResRectangle' {
-  import { Rectangle } from "native-ui/modules/Rectangle";
+declare module 'native-ui/modules/res-rectangle' {
+  import { Rectangle } from "modules/rectangle";
   export class ResRectangle extends Rectangle {
       constructor(pos: any, size: any, color: any);
       Draw(): void;
@@ -305,9 +322,9 @@ declare module 'native-ui/modules/ResRectangle' {
   }
 
 }
-declare module 'native-ui/modules/ResText' {
-  import { Size } from "native-ui/utils/Size";
-  import { Text } from "native-ui/modules/Text";
+declare module 'native-ui/modules/res-text' {
+  import { Text } from "modules/text";
+  import { Size } from "utils";
   export enum Alignment {
       Left = 0,
       Centered = 1,
@@ -326,10 +343,8 @@ declare module 'native-ui/modules/ResText' {
   }
 
 }
-declare module 'native-ui/modules/Sprite' {
-  import { Color } from "native-ui/utils/Color";
-  import { Point } from "native-ui/utils/Point";
-  import { Size } from "native-ui/utils/Size";
+declare module 'native-ui/modules/sprite' {
+  import { Color, Point, Size } from "utils";
   export class Sprite {
       TextureName: string;
       pos: Point;
@@ -346,17 +361,16 @@ declare module 'native-ui/modules/Sprite' {
   }
 
 }
-declare module 'native-ui/modules/StringMeasurer' {
+declare module 'native-ui/modules/string-measurer' {
   export class StringMeasurer {
       static MeasureStringWidthNoConvert(input: string): number;
       static MeasureString(str: string): number;
   }
 
 }
-declare module 'native-ui/modules/Text' {
-  import { Color } from "native-ui/utils/Color";
-  import { Point } from "native-ui/utils/Point";
-  import { Element } from "native-ui/modules/Element";
+declare module 'native-ui/modules/text' {
+  import { Element } from "modules/element";
+  import { Color, Point } from "utils";
   export class Text extends Element {
       caption: string;
       pos: Point;
@@ -369,7 +383,7 @@ declare module 'native-ui/modules/Text' {
   }
 
 }
-declare module 'native-ui/utils/Color' {
+declare module 'native-ui/utils/color' {
   export class Color {
       static Empty: Color;
       static Transparent: Color;
@@ -384,13 +398,23 @@ declare module 'native-ui/utils/Color' {
   }
 
 }
-declare module 'native-ui/utils/Common' {
+declare module 'native-ui/utils/common' {
   export class Common {
       static PlaySound(audioName: string, audioRef: string): void;
   }
 
 }
-declare module 'native-ui/utils/LiteEvent' {
+declare module 'native-ui/utils/index' {
+  export { Color } from 'native-ui/utils/color';
+  export { Common } from 'native-ui/utils/common';
+  export { ILiteEvent, LiteEvent } from 'native-ui/utils/lite-event';
+  export { Point } from 'native-ui/utils/point';
+  export { Screen } from 'native-ui/utils/screen';
+  export { Size } from 'native-ui/utils/size';
+  export { uuid } from 'native-ui/utils/uuid';
+
+}
+declare module 'native-ui/utils/lite-event' {
   export interface ILiteEvent {
       on(handler: {
           (...args: any[]): void;
@@ -412,7 +436,7 @@ declare module 'native-ui/utils/LiteEvent' {
   }
 
 }
-declare module 'native-ui/utils/Point' {
+declare module 'native-ui/utils/point' {
   export class Point {
       static Parse(point: number[]): Point;
       static Parse(point: {
@@ -425,14 +449,14 @@ declare module 'native-ui/utils/Point' {
   }
 
 }
-declare module 'native-ui/utils/Screen' {
+declare module 'native-ui/utils/screen' {
   export const Screen: {
       width: number;
       height: number;
   };
 
 }
-declare module 'native-ui/utils/Size' {
+declare module 'native-ui/utils/size' {
   export class Size {
       Width: number;
       Height: number;

@@ -1,7 +1,5 @@
-import { Point } from "../utils/Point";
-import { Size } from "../utils/Size";
-import { Rectangle } from "./Rectangle";
-import { Screen } from "../utils/Screen";
+import { Rectangle } from "modules/rectangle";
+import { Point, Screen, Size } from "utils";
 
 export class ResRectangle extends Rectangle {
 	constructor(pos, size, color) {

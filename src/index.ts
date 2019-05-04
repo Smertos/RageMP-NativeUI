@@ -1,23 +1,7 @@
-import { BadgeStyle } from "./enums/BadgeStyle";
-import { Font } from "./enums/Font";
-import { UIMenuCheckboxItem } from "./items/UIMenuCheckboxItem";
-import { UIMenuItem } from "./items/UIMenuItem";
-import { UIMenuListItem } from "./items/UIMenuListItem";
-import { UIMenuSliderItem } from "./items/UIMenuSliderItem";
-import { Container } from "./modules/Container";
-import { ItemsCollection } from "./modules/ItemsCollection";
-import { ListItem } from "./modules/ListItem";
-import { ResRectangle } from "./modules/ResRectangle";
-import { Alignment, ResText } from "./modules/ResText";
-import { Sprite } from "./modules/Sprite";
-import { Color } from "./utils/Color";
-import { Common } from "./utils/Common";
-import { LiteEvent } from "./utils/LiteEvent";
-import { Point } from "./utils/Point";
-import { Size } from "./utils/Size";
-import { StringMeasurer } from "./modules/StringMeasurer";
-import { uuid } from "./utils/uuid";
-import { Screen } from "./utils/Screen";
+import { BadgeStyle, Font } from "enums";
+import { UIMenuCheckboxItem, UIMenuItem, UIMenuListItem, UIMenuSliderItem } from "items";
+import { Alignment, Container, ItemsCollection, ListItem, ResRectangle, ResText, Sprite, StringMeasurer } from "modules";
+import { Color, Common, LiteEvent, Point, Screen, Size, uuid } from "utils";
 
 export class Menu {
 	public readonly Id: string = uuid();

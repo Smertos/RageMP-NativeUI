@@ -1,5 +1,5 @@
-import { Screen } from "../utils/Screen";
-import { ResText } from "./ResText";
+import { ResText } from "modules/res-text";
+import { Screen } from "utils";
 
 export class StringMeasurer {
 	public static MeasureStringWidthNoConvert(input: string) {

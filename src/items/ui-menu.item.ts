@@ -1,12 +1,12 @@
-import { BadgeStyle } from "../enums/BadgeStyle";
-import { Font } from "../enums/Font";
+import { BadgeStyle } from "../enums/badge-style.enum";
+import { Font } from "../enums/font.enum";
 import { Menu } from "../index";
-import { ResRectangle } from "../modules/ResRectangle";
-import { Alignment, ResText } from "../modules/ResText";
-import { Sprite } from "../modules/Sprite";
-import { Color } from "../utils/Color";
-import { Point } from "../utils/Point";
-import { Size } from "../utils/Size";
+import { ResRectangle } from "../modules/res-rectangle";
+import { Alignment, ResText } from "../modules/res-text";
+import { Sprite } from "../modules/sprite";
+import { Color } from "../utils/color";
+import { Point } from "../utils/point";
+import { Size } from "../utils/size";
 import { uuid } from "../utils/uuid";
 
 export class UIMenuItem {

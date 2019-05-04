@@ -1,7 +1,6 @@
-import { Color } from "../utils/Color";
-import { Point } from "../utils/Point";
-import { Element } from "./Element";
-import { ResText } from "./ResText";
+import { Element } from "modules/element";
+import { ResText } from "modules/res-text";
+import { Color, Point } from "utils";
 
 export class Text extends Element {
 	public caption: string;

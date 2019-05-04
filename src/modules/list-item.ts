@@ -1,4 +1,4 @@
-import { uuid } from "../utils/uuid";
+import { uuid } from "utils";
 
 export class ListItem {
 	public readonly Id: string = uuid();

@@ -1,8 +1,5 @@
-import { Color } from "../utils/Color";
-import { Point } from "../utils/Point";
-import { Size } from "../utils/Size";
-import { Text } from "./Text";
-import { Screen } from "../utils/Screen";
+import { Text } from "modules/text";
+import { Color, Point, Screen, Size } from "utils";
 
 export enum Alignment {
 	Left,
